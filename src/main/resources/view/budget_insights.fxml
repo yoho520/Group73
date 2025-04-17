@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="20.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.software.financeapp.controller.BudgetInsightsController">
+
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+    </padding>
+
+    <!-- 页面标题 -->
+    <HBox alignment="CENTER_LEFT">
+        <Label text="支出洞察与预算建议" styleClass="page-title">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+        <Region HBox.hgrow="ALWAYS" />
+        <ComboBox fx:id="timeRangeComboBox" promptText="选择时间范围" />
+    </HBox>
+
+    <!-- 主要内容区域 -->
+    <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+        <!-- 左侧图表区域 -->
+        <VBox spacing="20.0" HBox.hgrow="ALWAYS" styleClass="chart-container">
+            <!-- 支出趋势图 -->
+            <VBox styleClass="chart-box">
+                <Label text="支出趋势" styleClass="chart-title" />
+                <LineChart fx:id="spendingTrendChart" legendVisible="true" animated="false" VBox.vgrow="ALWAYS">
+                    <xAxis>
+                        <CategoryAxis label="月份" fx:id="xAxis" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="金额 (¥)" fx:id="yAxis" />
+                    </yAxis>
+                </LineChart>
+            </VBox>
+
+            <!-- 类别分布图 -->
+            <VBox styleClass="chart-box">
+                <Label text="支出分布" styleClass="chart-title" />
+                <PieChart fx:id="categoryDistributionChart" labelsVisible="true" animated="false" VBox.vgrow="ALWAYS" />
+            </VBox>
+        </VBox>
+
+        <!-- 右侧洞察与建议区域 -->
+        <VBox spacing="15.0" styleClass="insights-container" prefWidth="350.0">
+            <!-- 总览卡片 -->
+            <VBox styleClass="insight-card">
+                <Label text="支出总览" styleClass="insight-title" />
+                <HBox spacing="10.0">
+                    <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                        <Label text="月均支出" />
+                        <Label fx:id="avgMonthlySpendingLabel" text="¥0.00" styleClass="big-number" />
+                    </VBox>
+                    <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                        <Label text="变化趋势" />
+                        <Label fx:id="spendingTrendLabel" text="0%" styleClass="trend-value" />
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- 增长最快的类别 -->
+            <VBox styleClass="insight-card">
+                <Label text="增长最快的支出类别" styleClass="insight-title" />
+                <VBox fx:id="topGrowthCategoriesContainer" spacing="10.0">
+                    <!-- 动态添加增长类别 -->
+                </VBox>
+            </VBox>
+
+            <!-- 预算建议 -->
+            <VBox styleClass="insight-card" VBox.vgrow="ALWAYS">
+                <Label text="预算建议" styleClass="insight-title" />
+                <Label text="基于您的历史支出模式，我们建议以下预算分配:" styleClass="insight-description" />
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="transparent-scroll-pane">
+                    <VBox fx:id="budgetRecommendationsContainer" spacing="10.0">
+                        <!-- 动态添加预算建议 -->
+                    </VBox>
+                </ScrollPane>
+                <Button fx:id="applyRecommendationsButton" text="应用这些建议"
+                        styleClass="button,success" maxWidth="Infinity" />
+            </VBox>
+
+            <!-- 节省建议 -->
+            <VBox styleClass="insight-card">
+                <Label text="节省机会" styleClass="insight-title" />
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="transparent-scroll-pane">
+                    <VBox fx:id="savingSuggestionsContainer" spacing="10.0">
+                        <!-- 动态添加节省建议 -->
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+        </VBox>
+    </HBox>
+</VBox>

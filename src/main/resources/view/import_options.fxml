@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="15.0" prefWidth="700.0" prefHeight="500.0"
+      xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.software.financeapp.controller.ImportOptionsController">
+
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+    </padding>
+
+    <!-- 导入选项标题 -->
+    <Label text="导入交易记录" styleClass="form-title">
+        <font>
+            <Font name="System Bold" size="18.0" />
+        </font>
+    </Label>
+
+    <!-- 文件信息与选项 -->
+    <GridPane hgap="15.0" vgap="15.0">
+        <columnConstraints>
+            <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="300.0" prefWidth="300.0" />
+        </columnConstraints>
+
+        <!-- 文件名 -->
+        <Label text="文件：" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <Label fx:id="fileNameLabel" text="未选择文件" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+        <!-- 数据源类型 -->
+        <Label text="数据源类型：" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+        <ComboBox fx:id="sourceTypeComboBox" GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="Infinity" />
+
+        <!-- 记录数量 -->
+        <Label text="记录数量：" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+        <Label fx:id="recordCountLabel" text="0" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+    </GridPane>
+
+    <!-- 数据预览表格 -->
+    <Label text="数据预览:" styleClass="section-title" />
+    <TableView fx:id="previewTable" VBox.vgrow="ALWAYS" prefHeight="250.0" />
+
+    <!-- 按钮区域 -->
+    <HBox spacing="10.0" alignment="CENTER_RIGHT">
+        <Button fx:id="previewButton" text="预览数据" onAction="#handlePreview" styleClass="button,primary" />
+        <Button fx:id="importButton" text="导入数据" onAction="#handleImport" styleClass="button,success" />
+        <Button fx:id="cancelButton" text="取消" onAction="#handleCancel" styleClass="button,secondary" />
+    </HBox>
+
+</VBox>

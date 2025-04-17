@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="20.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.software.financeapp.controller.SpendingAnalysisController">
+
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+    </padding>
+
+    <!-- 页面标题和控制区域 -->
+    <HBox alignment="CENTER_LEFT" spacing="20.0">
+        <Label text="支出分析" styleClass="page-title">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- 日期范围选择 -->
+        <Label text="从" />
+        <DatePicker fx:id="startDatePicker" />
+        <Label text="至" />
+        <DatePicker fx:id="endDatePicker" />
+
+        <Button fx:id="applyButton" text="应用" onAction="#handleApplyFilter" styleClass="button,primary" />
+    </HBox>
+
+    <!-- 分析指标概览卡片 -->
+    <HBox spacing="15.0" styleClass="stats-container">
+        <VBox styleClass="stats-card">
+            <Label text="总支出" styleClass="stats-title" />
+            <Label fx:id="totalSpendingLabel" text="¥0.00" styleClass="stats-value,expense-value" />
+        </VBox>
+
+        <VBox styleClass="stats-card">
+            <Label text="月均支出" styleClass="stats-title" />
+            <Label fx:id="avgMonthlySpendingLabel" text="¥0.00" styleClass="stats-value" />
+        </VBox>
+
+        <VBox styleClass="stats-card">
+            <Label text="单次最高支出" styleClass="stats-title" />
+            <Label fx:id="maxSpendingLabel" text="¥0.00" styleClass="stats-value" />
+        </VBox>
+
+        <VBox styleClass="stats-card">
+            <Label text="支出频率" styleClass="stats-title" />
+            <Label fx:id="spendingFrequencyLabel" text="0次/月" styleClass="stats-value" />
+        </VBox>
+    </HBox>
+
+    <!-- 分析图表区域 -->
+    <TabPane VBox.vgrow="ALWAYS" styleClass="analysis-tabs">
+        <Tab text="支出趋势" closable="false">
+            <VBox spacing="10.0">
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <Label text="时间粒度:" />
+                    <ComboBox fx:id="trendGranularityComboBox" />
+
+                    <Label text="图表类型:" />
+                    <ComboBox fx:id="trendChartTypeComboBox" />
+
+                    <Region HBox.hgrow="ALWAYS" />
+
+                    <Button text="导出" onAction="#handleExportTrendData" styleClass="button,secondary" />
+                </HBox>
+
+                <!-- 支出趋势图表 -->
+                <StackPane VBox.vgrow="ALWAYS" styleClass="chart-container">
+                    <!-- 折线图 -->
+                    <LineChart fx:id="spendingTrendLineChart" visible="true" animated="false">
+                        <xAxis>
+                            <CategoryAxis label="日期" fx:id="trendXAxis" />
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="金额 (¥)" fx:id="trendYAxis" />
+                        </yAxis>
+                    </LineChart>
+
+                    <!-- 柱状图 -->
+                    <BarChart fx:id="spendingTrendBarChart" visible="false" animated="false">
+                        <xAxis>
+                            <CategoryAxis label="日期" />
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="金额 (¥)" />
+                        </yAxis>
+                    </BarChart>
+                </StackPane>
+            </VBox>
+        </Tab>
+
+        <Tab text="类别分布" closable="false">
+            <VBox spacing="10.0">
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <Label text="图表类型:" />
+                    <ComboBox fx:id="distributionChartTypeComboBox" />
+
+                    <Region HBox.hgrow="ALWAYS" />
+
+                    <Button text="导出" onAction="#handleExportDistributionData" styleClass="button,secondary" />
+                </HBox>
+
+                <!-- 类别分布图表 -->
+                <StackPane VBox.vgrow="ALWAYS" styleClass="chart-container">
+                    <!-- 饼图 -->
+                    <PieChart fx:id="categoryPieChart" visible="true" animated="false" />
+
+                    <!-- 柱状图 -->
+                    <BarChart fx:id="categoryBarChart" visible="false" animated="false">
+                        <xAxis>
+                            <CategoryAxis label="类别" />
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="金额 (¥)" />
+                        </yAxis>
+                    </BarChart>
+                </StackPane>
+            </VBox>
+        </Tab>
+
+        <Tab text="支出热图" closable="false">
+            <VBox spacing="10.0">
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <Label text="时间粒度:" />
+                    <ComboBox fx:id="heatmapGranularityComboBox" />
+
+                    <Region HBox.hgrow="ALWAYS" />
+
+                    <Button text="导出" onAction="#handleExportHeatmapData" styleClass="button,secondary" />
+                </HBox>
+
+                <!-- 支出热图 (这里使用自定义组件) -->
+                <StackPane fx:id="heatmapContainer" VBox.vgrow="ALWAYS" styleClass="chart-container" />
+            </VBox>
+        </Tab>
+
+        <Tab text="消费模式" closable="false">
+            <VBox spacing="10.0">
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="insight-scroll-pane">
+                    <VBox fx:id="patternInsightsContainer" spacing="20.0">
+                        <!-- 动态添加洞察卡片 -->
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+        </Tab>
+    </TabPane>
+</VBox>

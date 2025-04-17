@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="15.0" prefWidth="500.0" prefHeight="400.0"
+      xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.software.financeapp.controller.TransactionFormController">
+
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+    </padding>
+
+    <!-- 表单标题 -->
+    <Label text="交易记录" styleClass="form-title">
+        <font>
+            <Font name="System Bold" size="18.0" />
+        </font>
+    </Label>
+
+    <!-- 表单字段 -->
+    <GridPane hgap="15.0" vgap="15.0">
+        <columnConstraints>
+            <ColumnConstraints minWidth="100.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="300.0" prefWidth="300.0" />
+        </columnConstraints>
+
+        <!-- 交易类型 -->
+        <Label text="类型:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <ComboBox fx:id="typeComboBox" GridPane.rowIndex="0" GridPane.columnIndex="1" maxWidth="Infinity" />
+
+        <!-- 金额 -->
+        <Label text="金额:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+        <TextField fx:id="amountField" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="请输入金额" />
+
+        <!-- 日期 -->
+        <Label text="日期:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+        <DatePicker fx:id="datePicker" GridPane.rowIndex="2" GridPane.columnIndex="1" maxWidth="Infinity" />
+
+        <!-- 类别 -->
+        <Label text="类别:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+        <ComboBox fx:id="categoryComboBox" GridPane.rowIndex="3" GridPane.columnIndex="1" maxWidth="Infinity" />
+
+        <!-- 商家 -->
+        <Label text="商家:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+        <TextField fx:id="merchantField" GridPane.rowIndex="4" GridPane.columnIndex="1" promptText="请输入商家名称" />
+
+        <!-- 描述 -->
+        <Label text="描述:" GridPane.rowIndex="5" GridPane.columnIndex="0" GridPane.valignment="TOP" />
+        <TextArea fx:id="descriptionArea" GridPane.rowIndex="5" GridPane.columnIndex="1"
+                  promptText="请输入交易描述" prefRowCount="3" wrapText="true" />
+    </GridPane>
+
+    <Region VBox.vgrow="ALWAYS" />
+
+    <!-- 按钮区域 -->
+    <HBox spacing="10.0" alignment="CENTER_RIGHT">
+        <Button fx:id="cancelButton" text="取消" onAction="#handleCancel" styleClass="button,secondary" />
+        <Button fx:id="saveButton" text="保存" onAction="#handleSave" styleClass="button,success" defaultButton="true" />
+    </HBox>
+
+</VBox>
