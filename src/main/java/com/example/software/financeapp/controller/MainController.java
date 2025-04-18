@@ -174,7 +174,7 @@ public class MainController implements Initializable {
                 case "dashboardToggle":
                     //fxmlPath = "/view/dashboard.fxml";
                     // 暂时使用交易视图代替
-                    fxmlPath = "/view/transactions.fxml";
+                    fxmlPath = "/view/savings_plan.fxml";
                     break;
                 case "transactionsToggle":
                     fxmlPath = "/view/transactions.fxml";
@@ -193,7 +193,7 @@ public class MainController implements Initializable {
                     break;
                 case "investmentToggle":
                     // 暂时使用交易视图代替
-                    fxmlPath = "/view/transactions.fxml";
+                    fxmlPath = "/view/localization_settings.fxml";
                     break;
                 case "securityToggle":
                     // 暂时使用交易视图代替
@@ -201,7 +201,7 @@ public class MainController implements Initializable {
                     break;
                 case "aiAssistantToggle":
                     // 暂时使用交易视图代替
-                    fxmlPath = "/view/transactions.fxml";
+                    fxmlPath = "/view/ai_chat.fxml";
                     break;
                 case "settingsToggle":
                     //fxmlPath = "/view/settings.fxml";
