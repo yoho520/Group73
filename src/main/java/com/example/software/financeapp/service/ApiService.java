@@ -1,8 +1,6 @@
 package com.example.software.financeapp.service;
 
-import com.example.software.financeapp.model.entity.Category;
-import com.example.software.financeapp.model.entity.Transaction;
-import com.example.software.financeapp.model.entity.User;
+import com.example.software.financeapp.model.entity.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -111,5 +109,116 @@ public class ApiService {
 
         // 实际调用MockDataService删除交易
         return MockDataService.deleteTransaction(transactionId);
+    }
+    /**
+     * 获取用户的储蓄层级
+     * @param userId 用户ID
+     * @return 储蓄层级列表
+     * @throws IOException IO异常
+     */
+    public List<SavingsTier> getSavingsTiers(Long userId) throws IOException {
+        // 模拟API调用
+        System.out.println("模拟获取储蓄层级: 用户ID=" + userId);
+
+        // 返回模拟数据
+        return MockDataService.getMockSavingsTiers(userId);
+    }
+
+    /**
+     * 创建储蓄层级
+     * @param tier 储蓄层级
+     * @return 创建的储蓄层级
+     * @throws IOException IO异常
+     */
+    public SavingsTier createSavingsTier(SavingsTier tier) throws IOException {
+        // 模拟API调用
+        System.out.println("模拟创建储蓄层级: " + tier.getName());
+
+        // 设置模拟ID
+        tier.setId(System.currentTimeMillis());
+
+        // 添加到模拟数据
+        MockDataService.addSavingsTier(tier);
+
+        return tier;
+    }
+
+    /**
+     * 更新储蓄层级
+     * @param tier 储蓄层级
+     * @return 更新的储蓄层级
+     * @throws IOException IO异常
+     */
+    public SavingsTier updateSavingsTier(SavingsTier tier) throws IOException {
+        // 模拟API调用
+        System.out.println("模拟更新储蓄层级: ID=" + tier.getId());
+
+        // 更新模拟数据
+        MockDataService.updateSavingsTier(tier);
+
+        return tier;
+    }
+
+    /**
+     * 获取用户的储蓄目标
+     * @param userId 用户ID
+     * @return 储蓄目标列表
+     * @throws IOException IO异常
+     */
+    public List<SavingsGoal> getSavingsGoals(Long userId) throws IOException {
+        // 模拟API调用
+        System.out.println("模拟获取储蓄目标: 用户ID=" + userId);
+
+        // 返回模拟数据
+        return MockDataService.getMockSavingsGoals(userId);
+    }
+
+    /**
+     * 获取特定储蓄目标
+     * @param goalId 目标ID
+     * @return 储蓄目标
+     * @throws IOException IO异常
+     */
+    public SavingsGoal getSavingsGoal(Long goalId) throws IOException {
+        // 模拟API调用
+        System.out.println("模拟获取储蓄目标详情: ID=" + goalId);
+
+        // 返回模拟数据
+        return MockDataService.getMockSavingsGoal(goalId);
+    }
+
+    /**
+     * 创建储蓄目标
+     * @param goal 储蓄目标
+     * @return 创建的储蓄目标
+     * @throws IOException IO异常
+     */
+    public SavingsGoal createSavingsGoal(SavingsGoal goal) throws IOException {
+        // 模拟API调用
+        System.out.println("模拟创建储蓄目标: " + goal.getName());
+
+        // 设置模拟ID
+        goal.setId(System.currentTimeMillis());
+
+        // 添加到模拟数据
+        MockDataService.addSavingsGoal(goal);
+
+        return goal;
+    }
+
+    /**
+     * 更新储蓄目标
+     * @param goal 储蓄目标
+     * @return 更新的储蓄目标
+     * @throws IOException IO异常
+     */
+    public SavingsGoal updateSavingsGoal(SavingsGoal goal) throws IOException {
+        // 模拟API调用
+        System.out.println("模拟更新储蓄目标: ID=" + goal.getId());
+
+        // 更新模拟数据
+        MockDataService.updateSavingsGoal(goal);
+
+        return goal;
     }
 }
