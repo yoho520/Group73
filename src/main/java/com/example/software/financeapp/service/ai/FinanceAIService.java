@@ -1,91 +1,66 @@
 package com.example.software.financeapp.service.ai;
 
+import com.example.software.financeapp.config.AIServiceConfig;
+import com.example.software.financeapp.model.entity.ChatMessage;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
 /**
  * 财务AI服务，提供财务相关问题的智能回答
+ * 使用百度轩辕大模型API
  */
 public class FinanceAIService {
-
-    // 知识库：问题和对应的回答
-    private Map<String, String> knowledgeBase;
 
     // 问题分类
     private Map<String, List<String>> categories;
 
-    // 常见问题模式
-    private List<Pattern> patterns;
+    // XuanYuan API客户端
+    private XuanYuanAIClient aiClient;
 
-    // 关键词映射
+    // AI服务配置
+    private AIServiceConfig config;
+
+    // 对话历史
+    private List<ChatMessage> conversationHistory = new ArrayList<>();
+
+    // 本地响应缓存
+    private Map<String, String> responseCache = new HashMap<>();
+
+    // 使用本地回退功能的标志
+    private boolean enableLocalFallback;
+
+    // 本地关键词映射(用于本地回退)
     private Map<String, List<String>> keywordMapping;
 
-    public FinanceAIService() {
-        initializeKnowledgeBase();
-        initializeCategories();
-        initializePatterns();
-        initializeKeywordMapping();
-    }
+    // 本地知识库(用于本地回退)
+    private Map<String, String> knowledgeBase;
 
     /**
-     * 初始化知识库
+     * 构造函数
      */
-    private void initializeKnowledgeBase() {
-        knowledgeBase = new HashMap<>();
+    public FinanceAIService() {
+        // 加载配置
+        this.config = new AIServiceConfig();
+        String apiKey = config.getApiKey();
+        String secretKey = config.getSecretKey();
+        this.enableLocalFallback = config.isEnableLocalFallback();
 
-        // 预算相关
-        knowledgeBase.put("budget_create", "创建预算可以在'预算管理'页面，点击'新建预算'按钮。您可以设置总预算金额，并为不同类别分配资金。");
-        knowledgeBase.put("budget_adjust", "调整预算可以在'预算管理'页面，选择要修改的预算，点击'编辑'按钮进行修改。");
-        knowledgeBase.put("budget_exceed", "超出预算时系统会发送通知提醒您。您可以在'预算管理'页面查看详细情况，并决定是否调整预算或减少支出。");
-        knowledgeBase.put("budget_types", "本系统支持月度预算和自定义周期预算。您可以针对不同消费类别（如餐饮、交通、娱乐等）设置子预算。");
+        // 初始化API客户端
+        this.aiClient = new XuanYuanAIClient(apiKey, secretKey);
 
-        // 支出分析相关
-        knowledgeBase.put("analysis_view", "您可以在'支出分析'页面查看支出报表和图表。系统提供饼图、柱状图和趋势线等多种可视化方式。");
-        knowledgeBase.put("analysis_categories", "系统默认的支出类别包括：餐饮、交通、住房、娱乐、购物、医疗、教育等。您也可以创建自定义类别。");
-        knowledgeBase.put("analysis_export", "导出报表可以在'支出分析'页面，点击右上角的'导出'按钮，选择导出格式（PDF、Excel或CSV）。");
-        knowledgeBase.put("analysis_period", "您可以选择日、周、月、季度和年度等不同时间段进行数据分析，在'支出分析'页面的顶部有时间范围选择器。");
+        // 初始化问题分类
+        initializeCategories();
 
-        // 储蓄规划相关
-        knowledgeBase.put("savings_goal", "设置储蓄目标可以在'智能储蓄计划'页面，点击'新建目标'按钮。您需要设置目标名称、金额和目标日期。");
-        knowledgeBase.put("savings_track", "跟踪储蓄进度可以在'智能储蓄计划'页面查看。每个目标都有进度条和预计完成日期。");
-        knowledgeBase.put("savings_suggestion", "系统会根据您的收入和支出情况，提供个性化的储蓄建议，包括每月应存金额和分配比例。");
-        knowledgeBase.put("savings_tiers", "分层储蓄是将储蓄分为不同优先级层次（如紧急基金、短期目标、长期投资），帮助您更有策略地管理储蓄。");
-
-        // 本地化财务适配相关
-        knowledgeBase.put("local_city", "您可以在'本地化财务适配'页面选择您的所在城市，系统会根据当地消费水平和特点提供个性化建议。");
-        knowledgeBase.put("local_holiday", "系统集成了中国法定节假日日历，会提醒您节假日临近及其可能带来的消费变化。");
-        knowledgeBase.put("local_consumption", "不同城市有不同的消费特点，例如北京住房成本高，成都餐饮比例大，系统会据此调整预算建议。");
-        knowledgeBase.put("local_season", "系统会根据季节变化提供消费建议，如冬季取暖、夏季防暑和换季消费高峰等。");
-
-        // 账户和交易相关
-        knowledgeBase.put("transaction_add", "添加新交易可以在'交易记录'页面，点击'新增交易'按钮。您需要填写金额、日期、类别和备注等信息。");
-        knowledgeBase.put("transaction_edit", "编辑交易记录可以在'交易记录'页面，找到要修改的交易，点击'编辑'按钮进行修改。");
-        knowledgeBase.put("transaction_delete", "删除交易记录可以在'交易记录'页面，找到要删除的交易，点击'删除'按钮。删除前会要求确认。");
-        knowledgeBase.put("transaction_recurrent", "设置周期性交易可以在添加交易时勾选'周期性交易'选项，并设置重复频率（如每周、每月）。");
-
-        // 账户管理相关
-        knowledgeBase.put("account_add", "添加新账户可以在'账户管理'页面，点击'添加账户'按钮。您需要选择账户类型并填写相关信息。");
-        knowledgeBase.put("account_types", "系统支持多种账户类型，包括现金账户、银行卡、信用卡、投资账户、数字钱包等。");
-        knowledgeBase.put("account_sync", "同步银行账户交易需要先在'账户管理'页面添加您的银行账户，然后授权系统访问您的交易数据。");
-        knowledgeBase.put("account_view", "查看所有账户余额可以在'仪表盘'页面的账户概览区域或'账户管理'页面。");
-
-        // 系统使用相关
-        knowledgeBase.put("system_start", "新用户建议先添加您的账户信息，然后记录日常交易，再设置预算和储蓄目标，最后使用分析功能查看财务状况。");
-        knowledgeBase.put("system_data", "您的数据只存储在本地设备上，不会上传到云端，除非您启用了云备份功能。");
-        knowledgeBase.put("system_backup", "备份数据可以在'设置'页面，点击'备份与恢复'选项，然后选择'创建备份'。");
-        knowledgeBase.put("system_restore", "恢复数据可以在'设置'页面，点击'备份与恢复'选项，然后选择'从备份恢复'并选择备份文件。");
-
-        // 财务建议相关
-        knowledgeBase.put("advice_saving", "财务专家建议将收入的20%用于储蓄和投资，50%用于必要开支，30%用于个人消费。");
-        knowledgeBase.put("advice_emergency", "建立应急基金是理财的第一步，通常建议存够3-6个月的生活费作为紧急备用金。");
-        knowledgeBase.put("advice_debt", "如果您有多笔债务，建议先偿还高利率的债务（如信用卡），再处理低利率债务（如房贷）。");
-        knowledgeBase.put("advice_invest", "投资前请确保您已建立应急基金，并了解投资产品的风险。分散投资可以降低风险。");
-
-        // 其他常见问题
-        knowledgeBase.put("help_contact", "如果您有其他问题，可以联系我们的客服邮箱：support@financeapp.com 或拨打客服热线：400-123-4567。");
-        knowledgeBase.put("help_feedback", "提交反馈或建议可以在'设置'页面，点击'反馈与建议'选项，填写并提交您的意见。");
-        knowledgeBase.put("help_faq", "更多常见问题可以在'帮助中心'页面查看完整的FAQ列表。");
-        knowledgeBase.put("help_tutorial", "软件使用教程可以在'帮助中心'页面查看视频教程和分步指南。");
+        // 如果启用本地回退，初始化本地知识库
+        if (enableLocalFallback) {
+            initializeKnowledgeBase();
+            initializeKeywordMapping();
+        }
     }
 
     /**
@@ -159,64 +134,228 @@ public class FinanceAIService {
     }
 
     /**
-     * 初始化问题模式
+     * 根据用户问题提供智能回答
+     * @param question 用户问题
+     * @return AI回答
      */
-    private void initializePatterns() {
-        patterns = new ArrayList<>();
+    public String getAnswer(String question) {
+        if (question == null || question.trim().isEmpty()) {
+            return "请输入您的问题，我会尽力回答。";
+        }
 
-        // 预算相关模式
-        patterns.add(Pattern.compile(".*(?:如何|怎么|怎样).*(?:创建|设置|制定).*预算.*"));
-        patterns.add(Pattern.compile(".*(?:预算).*(?:修改|调整|更改).*"));
-        patterns.add(Pattern.compile(".*(?:超出|超过).*(?:预算).*"));
-        patterns.add(Pattern.compile(".*(?:预算).*(?:类型|种类).*"));
+        // 添加用户问题到会话历史
+        conversationHistory.add(new ChatMessage(question, "用户", LocalDateTime.now(), false));
 
-        // 支出分析相关模式
-        patterns.add(Pattern.compile(".*(?:如何|怎么|哪里).*(?:查看|看|找).*(?:支出分析|支出报表|消费分析).*"));
-        patterns.add(Pattern.compile(".*(?:支出|消费).*(?:类别|分类|种类).*"));
-        patterns.add(Pattern.compile(".*(?:导出|下载).*(?:报表|数据|分析).*"));
-        patterns.add(Pattern.compile(".*(?:时间段|周期|日期范围).*(?:分析|统计).*"));
+        try {
+            // 检查缓存
+            String cachedResponse = responseCache.get(normalizeQuestion(question));
+            if (cachedResponse != null) {
+                // 添加缓存的回答到会话历史
+                conversationHistory.add(new ChatMessage(cachedResponse, "AI助手", LocalDateTime.now(), true));
+                return cachedResponse;
+            }
 
-        // 储蓄相关模式
-        patterns.add(Pattern.compile(".*(?:如何|怎么).*(?:设置|创建).*(?:储蓄目标|储蓄计划).*"));
-        patterns.add(Pattern.compile(".*(?:跟踪|查看).*(?:储蓄进度|储蓄情况).*"));
-        patterns.add(Pattern.compile(".*(?:储蓄建议|储蓄推荐).*"));
-        patterns.add(Pattern.compile(".*(?:分层储蓄|储蓄层级|储蓄优先级).*"));
+            // 使用XuanYuan API获取回答
+            String response;
+            if (conversationHistory.size() <= 1) {
+                // 单轮对话
+                response = aiClient.sendQuery(question);
+            } else {
+                // 多轮对话(最多保留配置中指定的轮数)
+                List<ChatMessage> recentHistory = getRecentConversationHistory(config.getMaxHistoryRounds());
+                response = aiClient.sendConversationQuery(recentHistory);
+            }
 
-        // 本地化适配相关模式
-        patterns.add(Pattern.compile(".*(?:设置|选择|更改).*(?:城市|地区|位置).*"));
-        patterns.add(Pattern.compile(".*(?:节假日|法定假日|假期).*(?:提醒|预测|消费).*"));
-        patterns.add(Pattern.compile(".*(?:城市|地区).*(?:消费特点|消费习惯|消费水平).*"));
-        patterns.add(Pattern.compile(".*(?:季节|时令|春夏秋冬).*(?:消费|支出|花钱).*"));
+            // 添加API回答到会话历史
+            conversationHistory.add(new ChatMessage(response, "AI助手", LocalDateTime.now(), true));
 
-        // 交易相关模式
-        patterns.add(Pattern.compile(".*(?:如何|怎么).*(?:添加|记录|输入).*(?:交易|消费|支出|收入).*"));
-        patterns.add(Pattern.compile(".*(?:编辑|修改).*(?:交易|记录).*"));
-        patterns.add(Pattern.compile(".*(?:删除|移除).*(?:交易|记录).*"));
-        patterns.add(Pattern.compile(".*(?:周期性|定期|重复).*(?:交易|消费|支出|收入).*"));
+            // 缓存响应
+            responseCache.put(normalizeQuestion(question), response);
 
-        // 账户相关模式
-        patterns.add(Pattern.compile(".*(?:如何|怎么).*(?:添加|新建).*(?:账户|账号).*"));
-        patterns.add(Pattern.compile(".*(?:账户|账号).*(?:类型|种类).*"));
-        patterns.add(Pattern.compile(".*(?:同步|连接|关联).*(?:银行|账户).*(?:交易|数据).*"));
-        patterns.add(Pattern.compile(".*(?:查看|显示).*(?:账户余额|余额|资金).*"));
+            return response;
+        } catch (Exception e) {
+            System.err.println("API Error: " + e.getMessage());
 
-        // 系统使用相关模式
-        patterns.add(Pattern.compile(".*(?:新用户|开始使用|入门|新手).*"));
-        patterns.add(Pattern.compile(".*(?:数据|信息).*(?:安全|隐私|保密).*"));
-        patterns.add(Pattern.compile(".*(?:如何|怎么).*(?:备份|保存).*(?:数据|信息).*"));
-        patterns.add(Pattern.compile(".*(?:恢复|还原).*(?:数据|信息|备份).*"));
+            // 如果启用了本地回退，尝试使用本地逻辑回答
+            if (enableLocalFallback) {
+                String fallbackResponse = getLocalFallbackAnswer(question);
 
-        // 财务建议相关模式
-        patterns.add(Pattern.compile(".*(?:储蓄|存钱).*(?:比例|百分比|多少).*"));
-        patterns.add(Pattern.compile(".*(?:应急基金|紧急资金|备用金).*"));
-        patterns.add(Pattern.compile(".*(?:债务|欠款|贷款).*(?:管理|偿还|处理).*"));
-        patterns.add(Pattern.compile(".*(?:投资|理财).*(?:建议|推荐|方式).*"));
+                // 添加本地回退回答到会话历史
+                conversationHistory.add(new ChatMessage(fallbackResponse, "AI助手(本地)", LocalDateTime.now(), true));
 
-        // 帮助与反馈相关模式
-        patterns.add(Pattern.compile(".*(?:联系|找|咨询).*(?:客服|客户服务|帮助).*"));
-        patterns.add(Pattern.compile(".*(?:提交|提供|给出).*(?:反馈|建议|意见).*"));
-        patterns.add(Pattern.compile(".*(?:常见问题|FAQ|问答).*"));
-        patterns.add(Pattern.compile(".*(?:教程|指南|指导|攻略).*"));
+                return fallbackResponse;
+            }
+
+            // 返回错误消息
+            String errorMessage = "抱歉，我暂时无法回答您的问题。请稍后再试。";
+            conversationHistory.add(new ChatMessage(errorMessage, "AI助手", LocalDateTime.now(), true));
+            return errorMessage;
+        }
+    }
+
+    /**
+     * 异步获取回答
+     * @param question 用户问题
+     * @return 包含回答的CompletableFuture
+     */
+    public CompletableFuture<String> getAnswerAsync(String question) {
+        return CompletableFuture.supplyAsync(() -> getAnswer(question));
+    }
+
+    /**
+     * 获取对话历史
+     * @return 对话历史列表
+     */
+    public List<ChatMessage> getConversationHistory() {
+        return new ArrayList<>(conversationHistory);
+    }
+
+    /**
+     * 获取最近的对话历史
+     * @param maxRounds 最大轮数
+     * @return 最近的对话历史
+     */
+    public List<ChatMessage> getRecentConversationHistory(int maxRounds) {
+        int size = conversationHistory.size();
+
+        // 确保messages数组中的消息数量是奇数，且role必须依次为user、assistant
+        int startIndex = Math.max(0, size - (maxRounds * 2));
+        if (startIndex % 2 != 0) {
+            startIndex--; // 确保从user开始
+        }
+
+        return conversationHistory.subList(Math.max(0, startIndex), size);
+    }
+
+    /**
+     * 清除对话历史
+     */
+    public void clearConversationHistory() {
+        conversationHistory.clear();
+    }
+
+    /**
+     * 获取推荐问题
+     * @param category 类别，如果为null则随机推荐
+     * @return 推荐问题列表
+     */
+    public List<String> getRecommendedQuestions(String category) {
+        List<String> recommendations = new ArrayList<>();
+
+        if (category != null && categories.containsKey(category)) {
+            // 从指定类别中随机选择问题
+            List<String> categoryQuestions = new ArrayList<>(categories.get(category));
+            Random random = new Random();
+            int questionsToAdd = Math.min(3, categoryQuestions.size());
+
+            for (int i = 0; i < questionsToAdd; i++) {
+                int index = random.nextInt(categoryQuestions.size());
+                recommendations.add(categoryQuestions.get(index));
+                categoryQuestions.remove(index);  // 避免重复
+            }
+        } else {
+            // 从所有类别中随机选择问题
+            Random random = new Random();
+            List<String> allCategories = new ArrayList<>(categories.keySet());
+
+            int categoriesToUse = Math.min(3, allCategories.size());
+            for (int i = 0; i < categoriesToUse; i++) {
+                String randomCategory = allCategories.get(random.nextInt(allCategories.size()));
+                List<String> categoryQuestions = categories.get(randomCategory);
+
+                if (!categoryQuestions.isEmpty()) {
+                    int questionIndex = random.nextInt(categoryQuestions.size());
+                    recommendations.add(categoryQuestions.get(questionIndex));
+                }
+            }
+        }
+
+        return recommendations;
+    }
+
+    /**
+     * 获取所有问题分类
+     * @return 分类列表
+     */
+    public List<String> getCategories() {
+        return new ArrayList<>(categories.keySet());
+    }
+
+    /**
+     * 标准化问题（用于缓存）
+     * @param question 原始问题
+     * @return 标准化后的问题
+     */
+    private String normalizeQuestion(String question) {
+        if (question == null) return "";
+        // 转换为小写，去除标点和多余空格
+        return question.toLowerCase()
+                .replaceAll("[,.?!;:\"']", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
+    }
+
+    // 以下是本地回退功能的方法，当API调用失败时使用
+
+    /**
+     * 初始化知识库
+     */
+    private void initializeKnowledgeBase() {
+        knowledgeBase = new HashMap<>();
+
+        // 预算相关
+        knowledgeBase.put("budget_create", "创建预算可以在'预算管理'页面，点击'新建预算'按钮。您可以设置总预算金额，并为不同类别分配资金。");
+        knowledgeBase.put("budget_adjust", "调整预算可以在'预算管理'页面，选择要修改的预算，点击'编辑'按钮进行修改。");
+        knowledgeBase.put("budget_exceed", "超出预算时系统会发送通知提醒您。您可以在'预算管理'页面查看详细情况，并决定是否调整预算或减少支出。");
+        knowledgeBase.put("budget_types", "本系统支持月度预算和自定义周期预算。您可以针对不同消费类别（如餐饮、交通、娱乐等）设置子预算。");
+
+        // 支出分析相关
+        knowledgeBase.put("analysis_view", "您可以在'支出分析'页面查看支出报表和图表。系统提供饼图、柱状图和趋势线等多种可视化方式。");
+        knowledgeBase.put("analysis_categories", "系统默认的支出类别包括：餐饮、交通、住房、娱乐、购物、医疗、教育等。您也可以创建自定义类别。");
+        knowledgeBase.put("analysis_export", "导出报表可以在'支出分析'页面，点击右上角的'导出'按钮，选择导出格式（PDF、Excel或CSV）。");
+        knowledgeBase.put("analysis_period", "您可以选择日、周、月、季度和年度等不同时间段进行数据分析，在'支出分析'页面的顶部有时间范围选择器。");
+
+        // 储蓄规划相关
+        knowledgeBase.put("savings_goal", "设置储蓄目标可以在'智能储蓄计划'页面，点击'新建目标'按钮。您需要设置目标名称、金额和目标日期。");
+        knowledgeBase.put("savings_track", "跟踪储蓄进度可以在'智能储蓄计划'页面查看。每个目标都有进度条和预计完成日期。");
+        knowledgeBase.put("savings_suggestion", "系统会根据您的收入和支出情况，提供个性化的储蓄建议，包括每月应存金额和分配比例。");
+        knowledgeBase.put("savings_tiers", "分层储蓄是将储蓄分为不同优先级层次（如紧急基金、短期目标、长期投资），帮助您更有策略地管理储蓄。");
+
+        // 本地化财务适配相关
+        knowledgeBase.put("local_city", "您可以在'本地化财务适配'页面选择您的所在城市，系统会根据当地消费水平和特点提供个性化建议。");
+        knowledgeBase.put("local_holiday", "系统集成了中国法定节假日日历，会提醒您节假日临近及其可能带来的消费变化。");
+        knowledgeBase.put("local_consumption", "不同城市有不同的消费特点，例如北京住房成本高，成都餐饮比例大，系统会据此调整预算建议。");
+        knowledgeBase.put("local_season", "系统会根据季节变化提供消费建议，如冬季取暖、夏季防暑和换季消费高峰等。");
+
+        // 交易记录相关
+        knowledgeBase.put("transaction_add", "添加新交易可以在'交易记录'页面，点击'新增交易'按钮。您需要填写金额、日期、类别和备注等信息。");
+        knowledgeBase.put("transaction_edit", "编辑交易记录可以在'交易记录'页面，找到要修改的交易，点击'编辑'按钮进行修改。");
+        knowledgeBase.put("transaction_delete", "删除交易记录可以在'交易记录'页面，找到要删除的交易，点击'删除'按钮。删除前会要求确认。");
+        knowledgeBase.put("transaction_recurrent", "设置周期性交易可以在添加交易时勾选'周期性交易'选项，并设置重复频率（如每周、每月）。");
+
+        // 账户管理相关
+        knowledgeBase.put("account_add", "添加新账户可以在'账户管理'页面，点击'添加账户'按钮。您需要选择账户类型并填写相关信息。");
+        knowledgeBase.put("account_types", "系统支持多种账户类型，包括现金账户、银行卡、信用卡、投资账户、数字钱包等。");
+        knowledgeBase.put("account_sync", "同步银行账户交易需要先在'账户管理'页面添加您的银行账户，然后授权系统访问您的交易数据。");
+        knowledgeBase.put("account_view", "查看所有账户余额可以在'仪表盘'页面的账户概览区域或'账户管理'页面。");
+
+        // 系统使用相关
+        knowledgeBase.put("system_start", "新用户建议先添加您的账户信息，然后记录日常交易，再设置预算和储蓄目标，最后使用分析功能查看财务状况。");
+        knowledgeBase.put("system_data", "您的数据只存储在本地设备上，不会上传到云端，除非您启用了云备份功能。");
+        knowledgeBase.put("system_backup", "备份数据可以在'设置'页面，点击'备份与恢复'选项，然后选择'创建备份'。");
+        knowledgeBase.put("system_restore", "恢复数据可以在'设置'页面，点击'备份与恢复'选项，然后选择'从备份恢复'并选择备份文件。");
+
+        // 财务建议相关
+        knowledgeBase.put("advice_saving", "财务专家建议将收入的20%用于储蓄和投资，50%用于必要开支，30%用于个人消费。");
+        knowledgeBase.put("advice_emergency", "建立应急基金是理财的第一步，通常建议存够3-6个月的生活费作为紧急备用金。");
+        knowledgeBase.put("advice_debt", "如果您有多笔债务，建议先偿还高利率的债务（如信用卡），再处理低利率债务（如房贷）。");
+        knowledgeBase.put("advice_invest", "投资前请确保您已建立应急基金，并了解投资产品的风险。分散投资可以降低风险。");
+
+        // 其他常见问题
+        knowledgeBase.put("help_contact", "如果您有其他问题，可以联系我们的客服邮箱：support@financeapp.com 或拨打客服热线：400-123-4567。");
+        knowledgeBase.put("help_feedback", "提交反馈或建议可以在'设置'页面，点击'反馈与建议'选项，填写并提交您的意见。");
+        knowledgeBase.put("help_faq", "更多常见问题可以在'帮助中心'页面查看完整的FAQ列表。");
+        knowledgeBase.put("help_tutorial", "软件使用教程可以在'帮助中心'页面查看视频教程和分步指南。");
     }
 
     /**
@@ -281,72 +420,24 @@ public class FinanceAIService {
     }
 
     /**
-     * 根据用户问题提供智能回答
+     * 获取本地回退答案
      * @param question 用户问题
-     * @return AI回答
+     * @return 本地回退答案
      */
-    public String getAnswer(String question) {
-        if (question == null || question.trim().isEmpty()) {
-            return "请输入您的问题，我会尽力回答。";
-        }
-
+    private String getLocalFallbackAnswer(String question) {
         // 对问题进行预处理
-        String processedQuestion = preprocessQuestion(question);
+        String processedQuestion = normalizeQuestion(question);
 
-        // 尝试直接匹配问题模式
-        String patternMatchResult = matchPattern(processedQuestion);
-        if (patternMatchResult != null) {
-            return patternMatchResult;
-        }
-
-        // 尝试关键词匹配
+        // 关键词匹配
         String keywordMatchResult = matchKeywords(processedQuestion);
         if (keywordMatchResult != null) {
             return keywordMatchResult;
         }
 
         // 如果没有找到匹配，返回默认回答
-        return getDefaultAnswer(processedQuestion);
+        return "抱歉，我暂时无法回答您的问题。请尝试换一种方式提问，或稍后再试。";
     }
 
-    /**
-     * 预处理问题
-     * @param question 原始问题
-     * @return 预处理后的问题
-     */
-    private String preprocessQuestion(String question) {
-        // 转换为小写
-        String result = question.toLowerCase();
-
-        // 去除标点符号
-        result = result.replaceAll("[,.?!;:\"']", " ");
-
-        // 去除多余空格
-        result = result.replaceAll("\\s+", " ").trim();
-
-        return result;
-    }
-
-    /**
-     * 匹配问题模式
-     * @param question 预处理后的问题
-     * @return 匹配到的回答，如果没匹配到则返回null
-     */
-    private String matchPattern(String question) {
-        for (Pattern pattern : patterns) {
-            if (pattern.matcher(question).matches()) {
-                // 找到问题中的关键词
-                for (Map.Entry<String, List<String>> entry : keywordMapping.entrySet()) {
-                    for (String keyword : entry.getValue()) {
-                        if (question.contains(keyword)) {
-                            return knowledgeBase.get(entry.getKey());
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
     /**
      * 关键词匹配
      * @param question 预处理后的问题
@@ -388,26 +479,44 @@ public class FinanceAIService {
     }
 
     /**
-     * 获取默认回答
-     * @param question 预处理后的问题
-     * @return 默认回答
+     * 根据用户提问历史推断其可能感兴趣的领域
+     * @return 最有可能的兴趣领域
      */
-    private String getDefaultAnswer(String question) {
-        // 尝试判断问题类型
-        for (Map.Entry<String, List<String>> entry : categories.entrySet()) {
-            String category = entry.getKey();
-            List<String> categoryQuestions = entry.getValue();
+    public String inferUserInterests() {
+        if (conversationHistory.isEmpty()) {
+            return null;
+        }
 
-            for (String categoryQuestion : categoryQuestions) {
-                double similarity = calculateSimilarity(question, categoryQuestion);
-                if (similarity > 0.5) {  // 如果相似度超过阈值
-                    return "您似乎在询问关于" + category + "的问题。请尝试更具体地描述您的问题，以便我能提供更准确的帮助。";
+        // 统计各个类别的匹配次数
+        Map<String, Integer> categoryMatchCounts = new HashMap<>();
+
+        // 只分析用户消息
+        for (ChatMessage message : conversationHistory) {
+            if (!message.isAI()) {
+                String question = normalizeQuestion(message.getContent());
+
+                // 对每个类别计算匹配度
+                for (Map.Entry<String, List<String>> entry : categories.entrySet()) {
+                    String category = entry.getKey();
+                    List<String> categoryQuestions = entry.getValue();
+
+                    for (String categoryQuestion : categoryQuestions) {
+                        double similarity = calculateSimilarity(question, normalizeQuestion(categoryQuestion));
+                        if (similarity > 0.3) {  // 使用较低的阈值来捕获相关性
+                            categoryMatchCounts.put(category, categoryMatchCounts.getOrDefault(category, 0) + 1);
+                            break;  // 一个问题只计算一次匹配
+                        }
+                    }
                 }
             }
         }
 
-        // 如果无法判断问题类型，返回通用回答
-        return "抱歉，我无法理解您的问题。请尝试用不同的方式提问，或者查看帮助中心的常见问题解答。";
+        // 找出匹配次数最多的类别
+        if (!categoryMatchCounts.isEmpty()) {
+            return Collections.max(categoryMatchCounts.entrySet(), Map.Entry.comparingByValue()).getKey();
+        }
+
+        return null;
     }
 
     /**
@@ -432,53 +541,26 @@ public class FinanceAIService {
         union.addAll(words2);
 
         // Jaccard相似度
-        return (double) intersection.size() / union.size();
+        return union.isEmpty() ? 0 : (double) intersection.size() / union.size();
     }
 
     /**
-     * 获取推荐问题
-     * @param category 类别，如果为null则随机推荐
-     * @return 推荐问题列表
+     * 增强提示 - 将用户问题转换为更详细的提示
+     * @param question 用户问题
+     * @return 增强的提示
      */
-    public List<String> getRecommendedQuestions(String category) {
-        List<String> recommendations = new ArrayList<>();
+    private String enhancePrompt(String question) {
+        StringBuilder promptBuilder = new StringBuilder();
 
-        if (category != null && categories.containsKey(category)) {
-            // 从指定类别中随机选择问题
-            List<String> categoryQuestions = categories.get(category);
-            Random random = new Random();
-            int questionsToAdd = Math.min(3, categoryQuestions.size());
+        // 添加系统提示
+        promptBuilder.append("作为专业的财务顾问，请回答以下关于个人理财的问题：\n\n");
 
-            for (int i = 0; i < questionsToAdd; i++) {
-                int index = random.nextInt(categoryQuestions.size());
-                recommendations.add(categoryQuestions.get(index));
-                categoryQuestions.remove(index);  // 避免重复
-            }
-        } else {
-            // 从所有类别中随机选择问题
-            Random random = new Random();
-            List<String> allCategories = new ArrayList<>(categories.keySet());
+        // 添加用户问题
+        promptBuilder.append(question);
 
-            int categoriesToUse = Math.min(3, allCategories.size());
-            for (int i = 0; i < categoriesToUse; i++) {
-                String randomCategory = allCategories.get(random.nextInt(allCategories.size()));
-                List<String> categoryQuestions = categories.get(randomCategory);
+        // 添加格式要求
+        promptBuilder.append("\n\n请提供简洁、准确、专业的答案，重点关注实用建议。如果涉及投资建议，请适当提示风险。");
 
-                if (!categoryQuestions.isEmpty()) {
-                    int questionIndex = random.nextInt(categoryQuestions.size());
-                    recommendations.add(categoryQuestions.get(questionIndex));
-                }
-            }
-        }
-
-        return recommendations;
-    }
-
-    /**
-     * 获取所有问题分类
-     * @return 分类列表
-     */
-    public List<String> getCategories() {
-        return new ArrayList<>(categories.keySet());
+        return promptBuilder.toString();
     }
 }
