@@ -197,7 +197,7 @@ public class MainController implements Initializable {
                     break;
                 case "securityToggle":
                     // 暂时使用交易视图代替
-                    fxmlPath = "/view/transactions.fxml";
+                    fxmlPath = "/view/security_center.fxml";
                     break;
                 case "aiAssistantToggle":
                     // 暂时使用交易视图代替
@@ -217,6 +217,8 @@ public class MainController implements Initializable {
             contentArea.getChildren().add(view);
 
         } catch (IOException e) {
+
+            e.printStackTrace(); // 添加这一行以打印完整堆栈
             showErrorAlert("加载视图失败", e.getMessage());
         }
     }
