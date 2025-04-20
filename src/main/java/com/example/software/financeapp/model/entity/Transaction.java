@@ -18,7 +18,6 @@ import com.example.software.financeapp.model.enums.TransactionType;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -79,7 +78,17 @@ public class Transaction {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    // 实现一些业务逻辑方法
+    // 在Transaction类中添加位置字段
+    @Column(length = 255)
+    private String location;
+
+    // 是否为欺诈交易
+    @Column
+    private boolean fraudulent;
+
+    // 是否经过验证确认安全
+    @Column
+    private boolean verified;
 
     /**
      * 判断是否为支出
