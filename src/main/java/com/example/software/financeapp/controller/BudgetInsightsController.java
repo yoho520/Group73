@@ -146,6 +146,9 @@ public class BudgetInsightsController implements Initializable {
     /**
      * 刷新数据分析和可视化
      */
+    /**
+     * 刷新数据分析和可视化
+     */
     private void refreshData() {
         if (transactions == null || transactions.isEmpty()) {
             showNoDataMessage();
@@ -153,6 +156,13 @@ public class BudgetInsightsController implements Initializable {
         }
 
         int monthsCount = getSelectedMonthsCount();
+
+        // 清除所有图表和容器内容
+        spendingTrendChart.getData().clear();
+        categoryDistributionChart.getData().clear();
+        topGrowthCategoriesContainer.getChildren().clear();
+        budgetRecommendationsContainer.getChildren().clear();
+        savingSuggestionsContainer.getChildren().clear();
 
         // 计算月度支出趋势
         monthlyTrendData = analysisService.calculateMonthlyTrend(transactions, monthsCount);
@@ -168,6 +178,10 @@ public class BudgetInsightsController implements Initializable {
         // 生成预算建议
         currentRecommendation = analysisService.generateBudgetRecommendation(transactions, monthsCount);
         updateInsights();
+
+        // 强制重新布局
+        spendingTrendChart.layout();
+        categoryDistributionChart.layout();
     }
 
     /**

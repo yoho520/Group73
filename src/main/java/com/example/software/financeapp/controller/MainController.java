@@ -174,7 +174,7 @@ public class MainController implements Initializable {
                 case "dashboardToggle":
                     //fxmlPath = "/view/dashboard.fxml";
                     // 暂时使用交易视图代替
-                    fxmlPath = "/view/transactions.fxml";
+                    fxmlPath = "/view/savings_plan.fxml";
                     break;
                 case "transactionsToggle":
                     fxmlPath = "/view/transactions.fxml";
@@ -193,15 +193,15 @@ public class MainController implements Initializable {
                     break;
                 case "investmentToggle":
                     // 暂时使用交易视图代替
-                    fxmlPath = "/view/transactions.fxml";
+                    fxmlPath = "/view/localization_settings.fxml";
                     break;
                 case "securityToggle":
                     // 暂时使用交易视图代替
-                    fxmlPath = "/view/transactions.fxml";
+                    fxmlPath = "/view/security_center.fxml";
                     break;
                 case "aiAssistantToggle":
                     // 暂时使用交易视图代替
-                    fxmlPath = "/view/transactions.fxml";
+                    fxmlPath = "/view/ai_chat.fxml";
                     break;
                 case "settingsToggle":
                     //fxmlPath = "/view/settings.fxml";
@@ -217,6 +217,8 @@ public class MainController implements Initializable {
             contentArea.getChildren().add(view);
 
         } catch (IOException e) {
+
+            e.printStackTrace(); // 添加这一行以打印完整堆栈
             showErrorAlert("加载视图失败", e.getMessage());
         }
     }

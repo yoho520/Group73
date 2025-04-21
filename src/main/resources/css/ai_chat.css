@@ -1,0 +1,64 @@
+/* AI聊天界面样式 */
+
+/* 聊天滚动面板 */
+.chat-scroll-pane {
+    -fx-background-color: white;
+    -fx-border-color: #E0E0E0;
+    -fx-border-radius: 5;
+}
+
+/* 聊天消息容器 */
+.chat-messages-box {
+    -fx-background-color: white;
+}
+
+/* 推荐问题区域 */
+.suggested-questions-title {
+    -fx-font-weight: bold;
+    -fx-text-fill: #606060;
+}
+
+.suggested-questions-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.suggested-questions-box {
+    -fx-alignment: center-left;
+    -fx-fill-height: true;
+}
+
+/* 推荐问题按钮 */
+.suggested-question-button {
+    -fx-background-color: #F0F0F0;
+    -fx-text-fill: #404040;
+    -fx-background-radius: 15;
+    -fx-padding: 5 10;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+
+.suggested-question-button:hover {
+    -fx-background-color: #E0E0E0;
+}
+
+/* 输入框区域 */
+.input-box {
+    -fx-alignment: center;
+}
+
+.input-box .text-field {
+    -fx-padding: 8 12;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+}
+
+/* 状态区域 */
+.status-box {
+    -fx-padding: 5 0;
+}
+
+.status-box .label {
+    -fx-text-fill: #808080;
+    -fx-font-size: 11;
+}

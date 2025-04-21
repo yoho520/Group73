@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="10.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.software.financeapp.controller.AIChatController">
+
+    <padding>
+        <Insets top="15.0" right="15.0" bottom="15.0" left="15.0" />
+    </padding>
+
+    <!-- 页面标题 -->
+    <HBox alignment="CENTER_LEFT" styleClass="title-container">
+        <Label text="AI财务助手" styleClass="page-title">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+            <padding>
+                <Insets top="5.0" right="15.0" bottom="5.0" left="15.0" />
+            </padding>
+        </Label>
+        <Region HBox.hgrow="ALWAYS" />
+        <Button onAction="#handleExportChat" text="导出记录" styleClass="button,secondary" />
+        <Button onAction="#handleHelp" text="使用帮助" styleClass="button,secondary" />
+        <Button onAction="#handleClearChat" text="清空聊天" styleClass="button,danger" />
+    </HBox>
+
+    <!-- 聊天内容区域 -->
+    <ScrollPane fx:id="chatScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="chat-scroll-pane">
+        <VBox fx:id="chatMessagesBox" spacing="10.0" styleClass="chat-messages-box" />
+    </ScrollPane>
+
+    <!-- 推荐问题区域 -->
+    <Label text="推荐问题:" styleClass="suggested-questions-title" />
+    <ScrollPane fitToWidth="true" styleClass="suggested-questions-scroll">
+        <HBox fx:id="suggestedQuestionsBox" spacing="10.0" styleClass="suggested-questions-box">
+            <padding>
+                <Insets top="5.0" right="5.0" bottom="5.0" left="5.0" />
+            </padding>
+        </HBox>
+    </ScrollPane>
+
+    <!-- 输入框区域 -->
+    <HBox spacing="10.0" styleClass="input-box">
+        <TextField fx:id="messageField" promptText="输入您的问题..." HBox.hgrow="ALWAYS" />
+        <Button fx:id="sendButton" text="发送" onAction="#handleSendMessage" styleClass="button,primary" />
+    </HBox>
+
+    <!-- 状态区域 -->
+    <HBox alignment="CENTER_LEFT" styleClass="status-box">
+        <Label fx:id="statusLabel" text="准备就绪" />
+    </HBox>
+</VBox>

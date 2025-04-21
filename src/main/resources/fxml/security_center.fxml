@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane stylesheets="@../styles/application.css"
+            xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.software.financeapp.controller.SecurityCenterController">
+    <top>
+        <VBox spacing="10">
+            <padding>
+                <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+            </padding>
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <Label text="安全中心" styleClass="page-title">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Label>
+                <Pane HBox.hgrow="ALWAYS" />
+                <Button fx:id="refreshButton" onAction="#handleRefresh" text="刷新" styleClass="button,primary" />
+            </HBox>
+            <Separator />
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true">
+            <VBox spacing="20">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20" />
+                </padding>
+                <!-- 安全状态卡片 -->
+                <VBox styleClass="card">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="账户安全状态" styleClass="card-title" />
+                        <Pane HBox.hgrow="ALWAYS" />
+                        <Label fx:id="securityStatusLabel" text="正常"
+                               style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 5 10; -fx-background-radius: 15;" />
+                    </HBox>
+                    <Separator>
+                        <VBox.margin>
+                            <Insets bottom="10.0" top="10.0" />
+                        </VBox.margin>
+                    </Separator>
+                    <GridPane hgap="15" vgap="15">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="50" />
+                            <ColumnConstraints percentWidth="50" />
+                        </columnConstraints>
+                        <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="security-info-card">
+                            <Label text="可疑交易" styleClass="security-info-title" />
+                            <Label fx:id="suspiciousCountLabel" text="0" styleClass="security-info-value" />
+                            <Label text="系统检测到的可能存在风险的交易" styleClass="security-info-description" />
+                        </VBox>
+                        <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="security-info-card">
+                            <Label text="已报告欺诈" styleClass="security-info-title" />
+                            <Label fx:id="fraudCountLabel" text="0" styleClass="security-info-value" />
+                            <Label text="您已确认为欺诈的交易数量" styleClass="security-info-description" />
+                        </VBox>
+                        <VBox GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="security-info-card">
+                            <Label text="已验证安全" styleClass="security-info-title" />
+                            <Label fx:id="verifiedCountLabel" text="0" styleClass="security-info-value" />
+                            <Label text="您已确认安全的交易数量" styleClass="security-info-description" />
+                        </VBox>
+                        <VBox GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="security-info-card">
+                            <Label text="安全检查分数" styleClass="security-info-title" />
+                            <Label fx:id="securityScoreLabel" text="85/100" styleClass="security-info-value" />
+                            <Label text="根据您的交易模式计算的安全分数" styleClass="security-info-description" />
+                        </VBox>
+                    </GridPane>
+                </VBox>
+
+                <!-- 可疑交易列表 -->
+                <VBox styleClass="card">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="可疑交易预警" styleClass="card-title" />
+                        <Pane HBox.hgrow="ALWAYS" />
+                        <Button fx:id="scanButton" onAction="#handleScanTransactions" text="扫描交易" styleClass="button,primary" />
+                    </HBox>
+                    <Separator>
+                        <VBox.margin>
+                            <Insets bottom="10.0" top="10.0" />
+                        </VBox.margin>
+                    </Separator>
+
+                    <VBox fx:id="suspiciousTransactionsContainer" spacing="15">
+                        <Label fx:id="noSuspiciousLabel" text="暂无可疑交易，您的账户目前安全。" />
+                    </VBox>
+                </VBox>
+
+                <!-- 安全提示卡片 -->
+                <VBox styleClass="card">
+                    <Label text="安全使用建议" styleClass="card-title" />
+                    <Separator>
+                        <VBox.margin>
+                            <Insets bottom="10.0" top="10.0" />
+                        </VBox.margin>
+                    </Separator>
+
+                    <VBox spacing="15">
+                        <HBox styleClass="security-tip-row">
+                            <Label text="•" style="-fx-text-fill: #4CAF50;" />
+                            <Label text="定期检查您的交易记录，确认所有交易都是您本人操作的。" wrapText="true" />
+                        </HBox>
+                        <HBox styleClass="security-tip-row">
+                            <Label text="•" style="-fx-text-fill: #4CAF50;" />
+                            <Label text="对于大额交易，开启额外的验证措施，如短信验证。" wrapText="true" />
+                        </HBox>
+                        <HBox styleClass="security-tip-row">
+                            <Label text="•" style="-fx-text-fill: #4CAF50;" />
+                            <Label text="不要向陌生人透露您的账户信息，金融机构不会要求您提供密码。" wrapText="true" />
+                        </HBox>
+                        <HBox styleClass="security-tip-row">
+                            <Label text="•" style="-fx-text-fill: #4CAF50;" />
+                            <Label text="避免在公共WiFi环境下进行敏感金融操作。" wrapText="true" />
+                        </HBox>
+                        <HBox styleClass="security-tip-row">
+                            <Label text="•" style="-fx-text-fill: #4CAF50;" />
+                            <Label text="对可疑交易及时报告，保护您的资金安全。" wrapText="true" />
+                        </HBox>
+                    </VBox>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>
