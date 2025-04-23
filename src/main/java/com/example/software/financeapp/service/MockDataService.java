@@ -1,8 +1,6 @@
 package com.example.software.financeapp.service;
 
-import com.example.software.financeapp.model.entity.Category;
-import com.example.software.financeapp.model.entity.Transaction;
-import com.example.software.financeapp.model.entity.User;
+import com.example.software.financeapp.model.entity.*;
 import com.example.software.financeapp.model.enums.CategoryType;
 import com.example.software.financeapp.model.enums.TransactionType;
 
@@ -22,7 +20,78 @@ public class MockDataService {
     private static final List<Transaction> mockTransactions = new ArrayList<>();
     private static final List<Category> mockCategories = new ArrayList<>();
     private static boolean isInitialized = false;
+    // 添加到现有的MockDataService类中的静态数据区域
+    private static List<SavingsTier> mockSavingsTiers = new ArrayList<>();
+    private static List<SavingsGoal> mockSavingsGoals = new ArrayList<>();
 
+// 添加到MockDataService类中
+    /**
+     * 获取模拟储蓄层级数据
+     */
+    public static List<SavingsTier> getMockSavingsTiers(Long userId) {
+        // 过滤出指定用户的层级
+        return mockSavingsTiers.stream()
+                .filter(tier -> tier.getUserId().equals(userId))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 添加模拟储蓄层级
+     */
+    public static void addSavingsTier(SavingsTier tier) {
+        mockSavingsTiers.add(tier);
+    }
+
+    /**
+     * 更新模拟储蓄层级
+     */
+    public static void updateSavingsTier(SavingsTier tier) {
+        for (int i = 0; i < mockSavingsTiers.size(); i++) {
+            if (mockSavingsTiers.get(i).getId().equals(tier.getId())) {
+                mockSavingsTiers.set(i, tier);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 获取模拟储蓄目标数据
+     */
+    public static List<SavingsGoal> getMockSavingsGoals(Long userId) {
+        // 过滤出指定用户的目标
+        return mockSavingsGoals.stream()
+                .filter(goal -> goal.getUserId().equals(userId))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 获取特定储蓄目标
+     */
+    public static SavingsGoal getMockSavingsGoal(Long goalId) {
+        return mockSavingsGoals.stream()
+                .filter(goal -> goal.getId().equals(goalId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * 添加模拟储蓄目标
+     */
+    public static void addSavingsGoal(SavingsGoal goal) {
+        mockSavingsGoals.add(goal);
+    }
+
+    /**
+     * 更新模拟储蓄目标
+     */
+    public static void updateSavingsGoal(SavingsGoal goal) {
+        for (int i = 0; i < mockSavingsGoals.size(); i++) {
+            if (mockSavingsGoals.get(i).getId().equals(goal.getId())) {
+                mockSavingsGoals.set(i, goal);
+                break;
+            }
+        }
+    }
     // 模拟用户
     private static final User mockUser = User.builder()
             .id(1L)
