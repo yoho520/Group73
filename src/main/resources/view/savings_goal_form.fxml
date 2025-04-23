@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="15.0" minWidth="400.0" xmlns="http://javafx.com/javafx/11.0.1"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.software.financeapp.controller.SavingsGoalFormController">
+
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+    </padding>
+
+    <Label text="储蓄目标信息" styleClass="form-title">
+        <font>
+            <Font name="System Bold" size="16.0" />
+        </font>
+    </Label>
+
+    <GridPane hgap="10.0" vgap="15.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="120.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="250.0" />
+        </columnConstraints>
+
+        <!-- 目标名称 -->
+        <Label text="名称:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <TextField fx:id="nameField" promptText="输入目标名称"
+                   GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+        <!-- 目标描述 -->
+        <Label text="描述:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+        <TextArea fx:id="descriptionField" promptText="输入目标描述" prefHeight="60.0" wrapText="true"
+                  GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+        <!-- 目标金额 -->
+        <Label text="目标金额:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+        <TextField fx:id="targetAmountField" promptText="输入目标金额"
+                   GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+        <!-- 当前金额 -->
+        <Label text="当前金额:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+        <TextField fx:id="currentAmountField" promptText="输入当前金额"
+                   GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+        <!-- 目标日期 -->
+        <Label text="目标日期:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+        <DatePicker fx:id="targetDatePicker" promptText="选择目标日期"
+                    GridPane.rowIndex="4" GridPane.columnIndex="1" />
+
+        <!-- 储蓄层级 -->
+        <Label text="所属层级:" GridPane.rowIndex="5" GridPane.columnIndex="0" />
+        <ComboBox fx:id="tierComboBox" promptText="选择储蓄层级" maxWidth="Infinity"
+                  GridPane.rowIndex="5" GridPane.columnIndex="1" />
+    </GridPane>
+
+    <Region VBox.vgrow="ALWAYS" />
+
+    <HBox spacing="10.0" alignment="CENTER_RIGHT">
+        <Button fx:id="cancelButton" text="取消" onAction="#handleCancel" />
+        <Button fx:id="saveButton" text="保存" onAction="#handleSave" styleClass="button,primary" defaultButton="true" />
+    </HBox>
+</VBox>
