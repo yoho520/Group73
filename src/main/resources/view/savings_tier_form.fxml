@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="15.0" minWidth="400.0" xmlns="http://javafx.com/javafx/11.0.1"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.software.financeapp.controller.SavingsTierFormController">
+
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+    </padding>
+
+    <Label text="储蓄层级信息" styleClass="form-title">
+        <font>
+            <Font name="System Bold" size="16.0" />
+        </font>
+    </Label>
+
+    <GridPane hgap="10.0" vgap="15.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="120.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="250.0" />
+        </columnConstraints>
+
+        <!-- 层级名称 -->
+        <Label text="名称:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <TextField fx:id="nameField" promptText="输入层级名称"
+                   GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+        <!-- 层级描述 -->
+        <Label text="描述:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+        <TextArea fx:id="descriptionField" promptText="输入层级描述" prefHeight="60.0" wrapText="true"
+                  GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+        <!-- 优先级 -->
+        <Label text="优先级:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+        <ComboBox fx:id="priorityComboBox" promptText="选择优先级" maxWidth="Infinity"
+                  GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+        <!-- 分配比例 -->
+        <Label text="分配比例:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+        <HBox spacing="5.0" alignment="CENTER_LEFT" GridPane.rowIndex="3" GridPane.columnIndex="1">
+            <Slider fx:id="percentageSlider" min="0" max="100" value="0" showTickLabels="true"
+                    showTickMarks="true" majorTickUnit="25" minorTickCount="4" snapToTicks="true"
+                    HBox.hgrow="ALWAYS" />
+            <Label fx:id="percentageLabel" text="0%" minWidth="40" />
+        </HBox>
+
+        <!-- 是否启用 -->
+        <Label text="状态:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+        <CheckBox fx:id="activeCheckBox" text="启用此层级" selected="true"
+                  GridPane.rowIndex="4" GridPane.columnIndex="1" />
+    </GridPane>
+
+    <Region VBox.vgrow="ALWAYS" />
+
+    <HBox spacing="10.0" alignment="CENTER_RIGHT">
+        <Button fx:id="cancelButton" text="取消" onAction="#handleCancel" />
+        <Button fx:id="saveButton" text="保存" onAction="#handleSave" styleClass="button,primary" defaultButton="true" />
+    </HBox>
+</VBox>
