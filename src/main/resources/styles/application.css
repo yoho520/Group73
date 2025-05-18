@@ -265,3 +265,56 @@
 .verified-transaction-row {
     -fx-background-color: #e8f5e9;
 }
+/* 登录界面样式 */
+.login-background {
+    -fx-background-color: linear-gradient(to bottom, #3498db, #2980b9);
+}
+
+.login-panel {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+}
+
+.login-title {
+    -fx-fill: #34495e;
+}
+
+.login-subtitle {
+    -fx-fill: #7f8c8d;
+}
+
+.login-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.login-button:hover {
+    -fx-background-color: #2980b9;
+}
+
+.error-label {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 12px;
+}
+
+.demo-info {
+    -fx-background-color: #f8f9fa;
+    -fx-padding: 10;
+    -fx-background-radius: 5;
+    -fx-border-color: #e9ecef;
+    -fx-border-radius: 5;
+    -fx-margin-top: 15;
+}
+
+.demo-title {
+    -fx-fill: #495057;
+    -fx-font-weight: bold;
+}
+
+.demo-text {
+    -fx-fill: #6c757d;
+    -fx-font-size: 12px;
+}

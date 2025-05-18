@@ -9,9 +9,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -131,23 +133,40 @@ public class MainController implements Initializable {
     /**
      * 显示登录视图
      */
+    /**
+     * 显示登录视图
+     */
     private void showLoginView() {
-        // 跳过加载登录视图，直接模拟一个已登录用户
-        User demoUser = User.builder()
-                .id(1L)
-                .username("demo")
-                .fullName("演示用户")
-                .build();
+        try {
+            // 加载登录视图
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/login.fxml"));
+            Parent loginRoot = loader.load();
 
-        // 设置当前用户
-        appContext.setCurrentUser(demoUser);
+            // 创建新的场景和舞台
+            Scene loginScene = new Scene(loginRoot, 600, 500);
+            Stage loginStage = new Stage();
 
-        // 更新用户信息显示
-        updateUserInfo(demoUser);
+            // 添加样式表
+            loginScene.getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
+            loginScene.getStylesheets().add(getClass().getResource("/styles/application.css").toExternalForm());
 
-        // 加载主界面
-        dashboardToggle.setSelected(true);
-        loadView("dashboardToggle");
+            // 配置登录舞台
+            loginStage.setTitle("Financial Assistant - Login");
+            loginStage.setScene(loginScene);
+            loginStage.setResizable(false);
+
+            // 关闭主窗口
+            if (mainLayout.getScene() != null && mainLayout.getScene().getWindow() instanceof Stage) {
+                ((Stage) mainLayout.getScene().getWindow()).close();
+            }
+
+            // 显示登录窗口
+            loginStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showErrorAlert("无法加载登录界面", e.getMessage());
+        }
     }
 
     /**
