@@ -29,15 +29,8 @@ public class ApiService {
         // 模拟API调用
         System.out.println("模拟登录API调用: " + username);
 
-        // 返回模拟用户
-        return User.builder()
-                .id(1L)
-                .username(username)
-                .fullName("模拟用户")
-                .email(username + "@example.com")
-                .role("ROLE_USER")
-                .active(true)
-                .build();
+        // 使用MockDataService验证用户
+        return MockDataService.authenticateUser(username, password);
     }
 
     // 获取交易列表
