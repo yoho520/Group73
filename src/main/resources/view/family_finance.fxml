@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.software.financeapp.controller.FamilyFinanceController">
+    <top>
+        <VBox spacing="10">
+            <padding>
+                <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+            </padding>
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <Label text="家庭财务助手" styleClass="page-title">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Label>
+                <Pane HBox.hgrow="ALWAYS" />
+                <Button fx:id="refreshButton" onAction="#handleRefresh" text="刷新" styleClass="button,primary" />
+            </HBox>
+            <Separator />
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true">
+            <VBox spacing="20">
+                <padding>
+                    <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+                </padding>
+
+                <!-- 家庭成员导航部分 -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="家庭成员:" styleClass="section-title"/>
+                    <ComboBox fx:id="familyMemberComboBox" onAction="#handleMemberSelection" prefWidth="200" />
+                    <Pane HBox.hgrow="ALWAYS" />
+                    <Label text="当前查看:" styleClass="section-subtitle"/>
+                    <Label fx:id="currentMemberLabel" text="未选择" styleClass="highlighted-text"/>
+                </HBox>
+
+                <!-- 财务概况卡片 -->
+                <GridPane hgap="15" vgap="15">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="25" />
+                        <ColumnConstraints percentWidth="25" />
+                        <ColumnConstraints percentWidth="25" />
+                        <ColumnConstraints percentWidth="25" />
+                    </columnConstraints>
+
+                    <!-- 月收入 -->
+                    <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="stats-card">
+                        <Label text="本月收入" styleClass="stats-title" />
+                        <Label fx:id="incomeLabel" text="¥0.00" styleClass="stats-value,income-value" />
+                    </VBox>
+
+                    <!-- 月支出 -->
+                    <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="stats-card">
+                        <Label text="本月支出" styleClass="stats-title" />
+                        <Label fx:id="expenseLabel" text="¥0.00" styleClass="stats-value,expense-value" />
+                    </VBox>
+
+                    <!-- 结余 -->
+                    <VBox GridPane.columnIndex="2" GridPane.rowIndex="0" styleClass="stats-card">
+                        <Label text="本月结余" styleClass="stats-title" />
+                        <Label fx:id="balanceLabel" text="¥0.00" styleClass="stats-value" />
+                    </VBox>
+
+                    <!-- 交易笔数 -->
+                    <VBox GridPane.columnIndex="3" GridPane.rowIndex="0" styleClass="stats-card">
+                        <Label text="交易笔数" styleClass="stats-title" />
+                        <Label fx:id="transactionCountLabel" text="0" styleClass="stats-value" />
+                    </VBox>
+                </GridPane>
+
+                <!-- 支出分析图表 -->
+                <VBox styleClass="card">
+                    <Label text="支出分析" styleClass="card-title" />
+                    <Separator>
+                        <VBox.margin>
+                            <Insets top="10.0" bottom="15.0" />
+                        </VBox.margin>
+                    </Separator>
+                    <HBox spacing="20" alignment="CENTER">
+                        <!-- 支出类别饼图 -->
+                        <PieChart fx:id="expenseCategoryChart" title="支出类别分布" prefHeight="300" prefWidth="400" />
+
+                        <!-- 收支柱状图 -->
+                        <BarChart fx:id="incomeExpenseChart" title="收支对比" prefHeight="300" prefWidth="400">
+                            <xAxis>
+                                <CategoryAxis label="日期" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis label="金额 (¥)" />
+                            </yAxis>
+                        </BarChart>
+                    </HBox>
+                </VBox>
+
+                <!-- 最近交易列表 -->
+                <VBox styleClass="card">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="最近交易" styleClass="card-title" />
+                        <Pane HBox.hgrow="ALWAYS" />
+                        <Button fx:id="viewAllTransactionsButton" onAction="#handleViewAllTransactions"
+                                text="查看全部" styleClass="button,secondary" />
+                    </HBox>
+                    <Separator>
+                        <VBox.margin>
+                            <Insets top="10.0" bottom="15.0" />
+                        </VBox.margin>
+                    </Separator>
+                    <VBox fx:id="recentTransactionsContainer" spacing="10" />
+                </VBox>
+
+                <!-- 家长建议与提醒（仅父亲可见） -->
+                <VBox fx:id="parentAdviceContainer" styleClass="card">
+                    <Label text="家长建议与提醒" styleClass="card-title" />
+                    <Separator>
+                        <VBox.margin>
+                            <Insets top="10.0" bottom="15.0" />
+                        </VBox.margin>
+                    </Separator>
+
+                    <VBox fx:id="adviceItemsContainer" spacing="15">
+                        <!-- 动态填充建议内容 -->
+                    </VBox>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>
