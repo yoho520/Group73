@@ -93,14 +93,43 @@ public class MockDataService {
         }
     }
     // 模拟用户
-    private static final User mockUser = User.builder()
-            .id(1L)
-            .username("demo")
-            .fullName("演示用户")
-            .email("demo@example.com")
-            .role("ROLE_USER")
-            .active(true)
-            .build();
+    // 模拟用户列表
+    private static final List<User> mockUsers = new ArrayList<>();
+
+    // 修改为变量而非常量
+    private static User mockUser;
+
+    // 静态初始化块
+    static {
+        // 爸爸用户
+        User fatherUser = User.builder()
+                .id(1L)
+                .username("father")
+                .password("password")  // 在实际应用中应该加密存储
+                .fullName("张爸爸")
+                .email("father@example.com")
+                .role("ROLE_USER")
+                .active(true)
+                .build();
+
+        // 儿子用户
+        User sonUser = User.builder()
+                .id(2L)
+                .username("son")
+                .password("password")  // 在实际应用中应该加密存储
+                .fullName("张儿子")
+                .email("son@example.com")
+                .role("ROLE_USER")
+                .active(true)
+                .build();
+
+        // 添加到用户列表
+        mockUsers.add(fatherUser);
+        mockUsers.add(sonUser);
+
+        // 设置当前模拟用户为爸爸
+        mockUser = fatherUser;
+    }
 
     /**
      * 初始化模拟数据 - 只在第一次调用时执行
@@ -469,5 +498,33 @@ public class MockDataService {
      */
     public static User getMockUser() {
         return mockUser;
+    }
+
+    /**
+     * 根据用户名查找用户
+     */
+    public static User findUserByUsername(String username) {
+        return mockUsers.stream()
+                .filter(user -> user.getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * 验证用户凭证
+     */
+    public static User authenticateUser(String username, String password) {
+        return mockUsers.stream()
+                .filter(user -> user.getUsername().equals(username) &&
+                        user.getPassword().equals(password))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * 获取所有模拟用户
+     */
+    public static List<User> getMockUsers() {
+        return new ArrayList<>(mockUsers);
     }
 }
