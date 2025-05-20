@@ -208,7 +208,7 @@ public class MainController implements Initializable {
                     break;
                 case "familyFinanceToggle":
                     // 暂时使用交易视图代替
-                    fxmlPath = "/view/transactions.fxml";
+                    fxmlPath = "/view/family_finance.fxml";
                     break;
                 case "investmentToggle":
                     // 暂时使用交易视图代替
