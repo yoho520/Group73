@@ -6,6 +6,7 @@ import com.example.software.financeapp.model.entity.Transaction;
 import com.example.software.financeapp.model.entity.User;
 import com.example.software.financeapp.model.enums.TransactionType;
 import com.example.software.financeapp.service.ApiService;
+import com.example.software.financeapp.service.MockDataService;
 import com.example.software.financeapp.service.ai.ClassificationService;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -25,6 +26,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
@@ -35,13 +37,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.io.IOException;
-import com.example.software.financeapp.controller.TransactionFormController;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+
 /**
  * 交易管理控制器
  * 负责管理交易列表、添加、编辑和导入交易
@@ -88,6 +89,9 @@ public class TransactionController implements Initializable {
     private ComboBox<Category> categoryFilterComboBox;
 
     @FXML
+    private ComboBox<User> userFilterComboBox;
+
+    @FXML
     private Button addButton;
 
     @FXML
@@ -117,6 +121,9 @@ public class TransactionController implements Initializable {
     @FXML
     private Pagination pagination;
 
+    @FXML
+    private VBox filterPanel;
+
     // 数据相关属性
     private ObservableList<Transaction> allTransactions = FXCollections.observableArrayList();
     private FilteredList<Transaction> filteredTransactions;
@@ -132,15 +139,11 @@ public class TransactionController implements Initializable {
     // 服务
     private ApiService apiService;
     private ClassificationService classificationService;
-    @FXML
-    private VBox filterPanel;
 
-
-
-    /**
-     * 处理应用筛选按钮点击
-     */
-
+    // 用户相关
+    private List<User> familyMembers;
+    private User selectedUser;
+    private boolean isParentUser = false;
 
     @FXML
     private void toggleFilterPanel() {
@@ -152,9 +155,6 @@ public class TransactionController implements Initializable {
         applyFilters(); // 调用已有的过滤方法
     }
 
-    @FXML
-
-
     /**
      * 初始化控制器
      */
@@ -162,6 +162,13 @@ public class TransactionController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         this.apiService = appContext.getApiService();
         this.classificationService = appContext.getClassificationService();
+
+        // 获取当前用户
+        User currentUser = appContext.getCurrentUser();
+        this.selectedUser = currentUser;
+
+        // 检查是否为父亲账户（有监护权限）
+        this.isParentUser = currentUser != null && currentUser.getId().equals(1L);
 
         // 初始化表格列
         initializeTableColumns();
@@ -172,8 +179,83 @@ public class TransactionController implements Initializable {
         // 初始化按钮状态
         initializeButtons();
 
+        // 初始化家庭成员列表（如果是父亲账户）
+        initializeFamilyMembers();
+
         // 加载数据
         loadData();
+    }
+
+    /**
+     * 初始化家庭成员列表
+     */
+    private void initializeFamilyMembers() {
+        // 如果用户筛选下拉框存在
+        if (userFilterComboBox != null) {
+            // 只有父亲账户可见
+            userFilterComboBox.setVisible(isParentUser);
+            userFilterComboBox.setManaged(isParentUser);
+
+            if (isParentUser) {
+                // 获取当前用户
+                User currentUser = appContext.getCurrentUser();
+
+                // 获取家庭成员列表
+                familyMembers = new ArrayList<>();
+                familyMembers.add(currentUser); // 添加自己
+
+                // 添加子女账户
+                familyMembers.addAll(MockDataService.getFamilyMembersUnderGuardianship(currentUser.getId()));
+
+                // 设置下拉框数据
+                userFilterComboBox.setItems(FXCollections.observableArrayList(familyMembers));
+
+                // 设置单元格工厂
+                userFilterComboBox.setCellFactory(param -> new ListCell<User>() {
+                    @Override
+                    protected void updateItem(User item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                        } else {
+                            if (item.getId().equals(currentUser.getId())) {
+                                setText(item.getFullName() + " (我)");
+                            } else {
+                                setText(item.getFullName());
+                            }
+                        }
+                    }
+                });
+
+                // 设置显示的文本
+                userFilterComboBox.setButtonCell(new ListCell<User>() {
+                    @Override
+                    protected void updateItem(User item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                        } else {
+                            if (item.getId().equals(currentUser.getId())) {
+                                setText(item.getFullName() + " (我)");
+                            } else {
+                                setText(item.getFullName());
+                            }
+                        }
+                    }
+                });
+
+                // 默认选中当前用户
+                userFilterComboBox.setValue(currentUser);
+
+                // 添加选择事件监听
+                userFilterComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue != null) {
+                        selectedUser = newValue;
+                        loadData(); // 重新加载所选用户的交易数据
+                    }
+                });
+            }
+        }
     }
 
     /**
@@ -230,11 +312,10 @@ public class TransactionController implements Initializable {
             }
         });
 
-// 在这里添加categoryConfirmedColumn的初始化代码
+        // 类别确认状态列
         categoryConfirmedColumn.setText("AI");
         categoryConfirmedColumn.setCellValueFactory(new PropertyValueFactory<>("categoryConfirmed"));
         categoryConfirmedColumn.setCellFactory(column -> new TableCell<Transaction, Boolean>() {
-            // 加载大尺寸图标并缩放到合适大小
             private final ImageView confirmedIcon = new ImageView(
                     new Image(getClass().getResourceAsStream("/icons/confirmed.png"), 16, 16, true, true));
             private final ImageView aiIcon = new ImageView(
@@ -265,44 +346,12 @@ public class TransactionController implements Initializable {
             }
         });
         categoryConfirmedColumn.setPrefWidth(40);
+
         // 类别列
         categoryColumn.setCellValueFactory(cellData -> {
             Category category = cellData.getValue().getCategory();
             return new SimpleStringProperty(category != null ? category.getName() : "未分类");
         });
-
-        // 类别确认状态列
-        categoryConfirmedColumn.setText("AI");
-        categoryConfirmedColumn.setCellValueFactory(new PropertyValueFactory<>("categoryConfirmed"));
-        categoryConfirmedColumn.setCellFactory(column -> new TableCell<Transaction, Boolean>() {
-            private final ImageView confirmedIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/confirmed.png"), 16, 16, true, true));
-            private final ImageView aiIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/ai.png"), 16, 16, true, true));
-
-            @Override
-            protected void updateItem(Boolean confirmed, boolean empty) {
-                super.updateItem(confirmed, empty);
-                if (empty) {
-                    setGraphic(null);
-                    setTooltip(null);
-                } else {
-                    if (confirmed != null && confirmed) {
-                        setGraphic(confirmedIcon);
-                        setTooltip(new Tooltip("用户确认的类别"));
-                    } else {
-                        setGraphic(aiIcon);
-
-                        // 获取置信度
-                        Transaction transaction = getTableView().getItems().get(getIndex());
-                        double confidence = classificationService.getClassificationConfidence(transaction.getId());
-                        String reason = classificationService.getClassificationReason(transaction.getId());
-
-                        setTooltip(new Tooltip(String.format(
-                                "AI分类 (置信度: %.0f%%)\n%s", confidence * 100, reason)));
-                    }
-                }
-            }
-        });
-        categoryConfirmedColumn.setPrefWidth(40);
 
         // 商家列
         merchantColumn.setCellValueFactory(new PropertyValueFactory<>("merchant"));
@@ -353,7 +402,8 @@ public class TransactionController implements Initializable {
      */
     private void initializeFilters() {
         // 初始化日期选择器
-        startDatePicker.setValue(LocalDate.now().minusMonths(1));
+        // 修改为更宽的日期范围，比如一年
+        startDatePicker.setValue(LocalDate.now().minusYears(1));
         endDatePicker.setValue(LocalDate.now());
 
         // 设置日期选择器变更监听
@@ -401,8 +451,22 @@ public class TransactionController implements Initializable {
             User currentUser = appContext.getCurrentUser();
             if (currentUser == null) return;
 
-            // 加载交易数据
-            List<Transaction> transactions = apiService.getTransactions(currentUser.getId(), 0, 100);
+            // 确定要显示哪个用户的交易数据
+            Long userId = selectedUser.getId();
+
+            // 权限检查：确保当前用户有权限查看所选用户的数据
+            if (!MockDataService.hasPermissionToView(currentUser.getId(), userId)) {
+                showErrorAlert("权限错误", "您没有权限查看该用户的交易数据");
+                // 重置为当前用户
+                selectedUser = currentUser;
+                if (userFilterComboBox != null) {
+                    userFilterComboBox.setValue(currentUser);
+                }
+                userId = currentUser.getId();
+            }
+
+            // 加载交易数据 - 只加载特定用户的交易
+            List<Transaction> transactions = apiService.getTransactions(userId, 0, 100);
 
             // 加载类别数据
             categories = apiService.getCategories(currentUser.getId());
@@ -545,6 +609,9 @@ public class TransactionController implements Initializable {
 
             // 设置类别列表
             controller.setCategories(categories);
+
+            // 设置当前用户
+            controller.setUser(selectedUser);
 
             // 设置保存回调
             controller.setOnSaveCallback(savedTransaction -> {
@@ -719,6 +786,9 @@ public class TransactionController implements Initializable {
                 // 设置文件
                 controller.setFile(selectedFile);
 
+                // 设置当前用户
+                controller.setUser(selectedUser);
+
                 // 设置导入完成回调
                 controller.setOnImportFinishedCallback(importedTransactions -> {
                     // 自动分类导入的交易
@@ -811,6 +881,7 @@ public class TransactionController implements Initializable {
             }
         });
     }
+
     /**
      * 处理修改类别菜单项点击
      */
