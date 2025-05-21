@@ -334,4 +334,14 @@ public class TransactionFormController implements Initializable {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    /**
+     * 设置用户
+     */
+    public void setUser(User user) {
+        if (transaction == null) {
+            transaction = new Transaction();
+            transaction.setUser(user);
+        }
+    }
 }

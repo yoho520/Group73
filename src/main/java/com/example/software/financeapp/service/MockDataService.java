@@ -23,6 +23,8 @@ public class MockDataService {
     // 添加到现有的MockDataService类中的静态数据区域
     private static List<SavingsTier> mockSavingsTiers = new ArrayList<>();
     private static List<SavingsGoal> mockSavingsGoals = new ArrayList<>();
+    // 家庭关系集合
+    private static final List<FamilyRelationship> mockFamilyRelationships = new ArrayList<>();
 
 // 添加到MockDataService类中
     /**
@@ -129,6 +131,21 @@ public class MockDataService {
 
         // 设置当前模拟用户为爸爸
         mockUser = fatherUser;
+
+
+        // 创建父子关系（父亲ID=1，儿子ID=2）
+        FamilyRelationship fatherSonRelationship = FamilyRelationship.builder()
+                .id(1L)
+                .parentId(1L)  // 父亲ID
+                .childId(2L)   // 儿子ID
+                .relationshipType("父子")
+                .permissionLevel("完全访问")
+                .createdAt(LocalDateTime.now())
+                .status("活跃")
+                .build();
+
+        mockFamilyRelationships.add(fatherSonRelationship);
+
     }
 
     /**
@@ -237,7 +254,11 @@ public class MockDataService {
      * 创建模拟交易
      */
     private static void createMockTransactions() {
-        // 支出交易
+        // 获取父亲和儿子用户对象
+        User fatherUser = mockUsers.get(0); // 父亲
+        User sonUser = mockUsers.get(1);    // 儿子
+
+        // 父亲的交易数据
         mockTransactions.add(Transaction.builder()
                 .id(1L)
                 .type(TransactionType.EXPENSE)
@@ -247,7 +268,7 @@ public class MockDataService {
                 .transactionDate(LocalDateTime.now().minusDays(1))
                 .category(getCategory(1L))  // 餐饮
                 .source("手动输入")
-                .user(mockUser)
+                .user(fatherUser)
                 .categoryConfirmed(true)
                 .build());
 
@@ -260,7 +281,7 @@ public class MockDataService {
                 .transactionDate(LocalDateTime.now().minusDays(1))
                 .category(getCategory(2L))  // 交通
                 .source("手动输入")
-                .user(mockUser)
+                .user(fatherUser)
                 .categoryConfirmed(true)
                 .build());
 
@@ -273,7 +294,7 @@ public class MockDataService {
                 .transactionDate(LocalDateTime.now().minusDays(2))
                 .category(getCategory(3L))  // 购物
                 .source("支付宝")
-                .user(mockUser)
+                .user(fatherUser)
                 .categoryConfirmed(true)
                 .build());
 
@@ -286,7 +307,7 @@ public class MockDataService {
                 .transactionDate(LocalDateTime.now().minusDays(3))
                 .category(getCategory(4L))  // 娱乐
                 .source("微信支付")
-                .user(mockUser)
+                .user(fatherUser)
                 .categoryConfirmed(true)
                 .build());
 
@@ -300,7 +321,7 @@ public class MockDataService {
                 .transactionDate(LocalDateTime.now().minusDays(5))
                 .category(getCategory(5L))  // 工资
                 .source("手动输入")
-                .user(mockUser)
+                .user(fatherUser)
                 .categoryConfirmed(true)
                 .build());
 
@@ -313,7 +334,99 @@ public class MockDataService {
                 .transactionDate(LocalDateTime.now().minusDays(6))
                 .category(getCategory(6L))  // 奖金
                 .source("手动输入")
-                .user(mockUser)
+                .user(fatherUser)
+                .categoryConfirmed(true)
+                .build());
+
+        // 儿子的交易数据
+        mockTransactions.add(Transaction.builder()
+                .id(7L)
+                .type(TransactionType.EXPENSE)
+                .amount(new BigDecimal("25.50"))
+                .description("午餐 - 牛肉面")
+                .merchant("校园食堂")
+                .transactionDate(LocalDateTime.now().minusDays(1))
+                .category(getCategory(1L))  // 餐饮
+                .source("手动输入")
+                .user(sonUser)
+                .categoryConfirmed(true)
+                .build());
+
+        mockTransactions.add(Transaction.builder()
+                .id(8L)
+                .type(TransactionType.EXPENSE)
+                .amount(new BigDecimal("12.00"))
+                .description("公交车")
+                .merchant("公交公司")
+                .transactionDate(LocalDateTime.now().minusDays(2))
+                .category(getCategory(2L))  // 交通
+                .source("手动输入")
+                .user(sonUser)
+                .categoryConfirmed(true)
+                .build());
+
+        mockTransactions.add(Transaction.builder()
+                .id(9L)
+                .type(TransactionType.EXPENSE)
+                .amount(new BigDecimal("89.99"))
+                .description("篮球")
+                .merchant("体育用品店")
+                .transactionDate(LocalDateTime.now().minusDays(3))
+                .category(getCategory(4L))  // 娱乐
+                .source("支付宝")
+                .user(sonUser)
+                .categoryConfirmed(true)
+                .build());
+
+        mockTransactions.add(Transaction.builder()
+                .id(10L)
+                .type(TransactionType.EXPENSE)
+                .amount(new BigDecimal("45.50"))
+                .description("教辅材料")
+                .merchant("新华书店")
+                .transactionDate(LocalDateTime.now().minusDays(4))
+                .category(getCategory(3L))  // 购物
+                .source("微信支付")
+                .user(sonUser)
+                .categoryConfirmed(true)
+                .build());
+
+        mockTransactions.add(Transaction.builder()
+                .id(11L)
+                .type(TransactionType.INCOME)
+                .amount(new BigDecimal("500.00"))
+                .description("本月零花钱")
+                .merchant("家庭")
+                .transactionDate(LocalDateTime.now().minusDays(5))
+                .category(getCategory(5L))  // 工资（作为收入类别）
+                .source("手动输入")
+                .user(sonUser)
+                .categoryConfirmed(true)
+                .build());
+
+        mockTransactions.add(Transaction.builder()
+                .id(12L)
+                .type(TransactionType.EXPENSE)
+                .amount(new BigDecimal("20.00"))
+                .description("剪头发")
+                .merchant("理发店")
+                .transactionDate(LocalDateTime.now().minusDays(7))
+                .category(getCategory(3L))  // 购物（个人护理）
+                .source("现金")
+                .user(sonUser)
+                .categoryConfirmed(true)
+                .build());
+
+        mockTransactions.add(Transaction.builder()
+                .id(13L)
+                .type(TransactionType.INCOME)
+                .amount(new BigDecimal("100.00"))
+                .description("期中考试奖励")
+                .merchant("家庭")
+                .transactionDate(LocalDateTime.now().minusDays(10))
+                .category(getCategory(6L))  // 奖金
+                .source("手动输入")
+                .user(sonUser)
                 .categoryConfirmed(true)
                 .build());
     }
@@ -526,5 +639,45 @@ public class MockDataService {
      */
     public static List<User> getMockUsers() {
         return new ArrayList<>(mockUsers);
+    }
+
+
+    /**
+     * 获取用户的家庭关系
+     */
+    public static List<FamilyRelationship> getFamilyRelationshipsForUser(Long userId) {
+        return mockFamilyRelationships.stream()
+                .filter(r -> r.getParentId().equals(userId) || r.getChildId().equals(userId))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 获取用户监护的家庭成员
+     */
+    public static List<User> getFamilyMembersUnderGuardianship(Long guardianId) {
+        List<Long> childIds = mockFamilyRelationships.stream()
+                .filter(r -> r.getParentId().equals(guardianId) && "活跃".equals(r.getStatus()))
+                .map(FamilyRelationship::getChildId)
+                .collect(Collectors.toList());
+
+        return mockUsers.stream()
+                .filter(user -> childIds.contains(user.getId()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 检查用户是否有权限查看另一用户的财务
+     */
+    public static boolean hasPermissionToView(Long viewerId, Long targetId) {
+        // 相同用户ID，自己查看自己的财务
+        if (viewerId.equals(targetId)) {
+            return true;
+        }
+
+        // 检查家庭关系
+        return mockFamilyRelationships.stream()
+                .anyMatch(r -> r.getParentId().equals(viewerId) &&
+                        r.getChildId().equals(targetId) &&
+                        "活跃".equals(r.getStatus()));
     }
 }
