@@ -39,7 +39,7 @@ public class ApiService {
         System.out.println("模拟获取交易列表: 用户ID=" + userId + ", 页码=" + page + ", 每页大小=" + size);
 
         // 返回模拟数据
-        return MockDataService.getMockTransactions();
+        return MockDataService.getMockTransactionsForUser(userId);
     }
 
     // 获取类别列表
