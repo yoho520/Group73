@@ -187,7 +187,15 @@ public class ImportOptionsController implements Initializable {
         previewTable.getColumns().addAll(dateColumn, typeColumn, amountColumn,
                 merchantColumn, descriptionColumn, categoryColumn);
     }
+    private User user;
 
+    /**
+     * 设置用户，新导入的交易将关联到此用户
+     * @param user 用户对象
+     */
+    public void setUser(User user) {
+        this.user = user;
+    }
     /**
      * 设置文件
      *
