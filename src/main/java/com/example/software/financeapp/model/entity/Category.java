@@ -2,22 +2,56 @@ package com.example.software.financeapp.model.entity;
 
 import com.example.software.financeapp.model.enums.CategoryType;
 import java.time.LocalDateTime;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "categories")
 public class Category {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(length = 50)
     private String name;
+
+    @Column(length = 255)
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private CategoryType type;
+
+    @Column(length = 30)
     private String icon;
+
+    @Column(length = 20)
     private String color;
+
+    @Column
     private boolean systemDefault;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
     private Category parent;
+
+    @Column(length = 255)
     private String keywords;
+
+    @Column
     private boolean seasonal;
+
+    @Column(length = 100)
     private String seasonalMonths;
+
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;  // null表示系统预设分类
 
     // 构造函数
@@ -160,5 +194,17 @@ public class Category {
         }
 
         return this.seasonalMonths.contains("\"" + month + "\"");
+    }
+
+    // 添加JPA实体生命周期方法
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

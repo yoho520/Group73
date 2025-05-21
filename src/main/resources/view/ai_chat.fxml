@@ -23,6 +23,7 @@
             </padding>
         </Label>
         <Region HBox.hgrow="ALWAYS" />
+        <Button onAction="#handleExportChat" text="导出记录" styleClass="button,secondary" />
         <Button onAction="#handleHelp" text="使用帮助" styleClass="button,secondary" />
         <Button onAction="#handleClearChat" text="清空聊天" styleClass="button,danger" />
     </HBox>

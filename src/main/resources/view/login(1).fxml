@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<StackPane xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.software.financeapp.controller.LoginController"
+           styleClass="login-background">
+    <children>
+        <VBox alignment="CENTER" maxWidth="400" spacing="15" styleClass="login-panel">
+            <padding>
+                <Insets bottom="30.0" left="40.0" right="40.0" top="30.0" />
+            </padding>
+
+            <!-- 标题 -->
+            <Text styleClass="login-title" text="Financial Assistant">
+                <font>
+                    <Font name="System Bold" size="24.0" />
+                </font>
+            </Text>
+
+            <Text styleClass="login-subtitle" text="家庭财务管理系统">
+                <font>
+                    <Font size="16.0" />
+                </font>
+            </Text>
+
+            <Separator>
+                <VBox.margin>
+                    <Insets bottom="10.0" top="10.0" />
+                </VBox.margin>
+            </Separator>
+
+            <!-- 登录表单 -->
+            <Label text="用户名" />
+            <TextField fx:id="usernameField" promptText="请输入用户名" />
+
+            <Label text="密码" />
+            <PasswordField fx:id="passwordField" promptText="请输入密码" />
+
+            <!-- 错误信息 -->
+            <Label fx:id="errorLabel" styleClass="error-label" text="" textFill="RED" visible="false" />
+
+            <!-- 登录按钮 -->
+            <Button fx:id="loginButton" defaultButton="true" onAction="#handleLogin" prefHeight="40.0" prefWidth="200.0" styleClass="login-button" text="登录" />
+
+            <!-- 演示信息 -->
+            <VBox spacing="5" styleClass="demo-info">
+                <Text text="演示账号信息:" styleClass="demo-title" />
+                <Text text="爸爸账户: father / password" styleClass="demo-text" />
+                <Text text="儿子账户: son / password" styleClass="demo-text" />
+            </VBox>
+        </VBox>
+    </children>
+</StackPane>

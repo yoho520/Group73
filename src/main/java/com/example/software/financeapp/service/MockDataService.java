@@ -132,6 +132,7 @@ public class MockDataService {
         // 设置当前模拟用户为爸爸
         mockUser = fatherUser;
 
+
         // 创建父子关系（父亲ID=1，儿子ID=2）
         FamilyRelationship fatherSonRelationship = FamilyRelationship.builder()
                 .id(1L)
@@ -144,6 +145,7 @@ public class MockDataService {
                 .build();
 
         mockFamilyRelationships.add(fatherSonRelationship);
+
     }
 
     /**
@@ -638,6 +640,7 @@ public class MockDataService {
     public static List<User> getMockUsers() {
         return new ArrayList<>(mockUsers);
     }
+
 
     /**
      * 获取用户的家庭关系
