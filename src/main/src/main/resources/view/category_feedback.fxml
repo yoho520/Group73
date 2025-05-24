@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="15.0" prefWidth="500.0" prefHeight="400.0"
+      xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.software.financeapp.controller.CategoryFeedbackController">
+
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+    </padding>
+
+    <!-- 表单标题 -->
+    <Label text="交易分类反馈" styleClass="form-title">
+        <font>
+            <Font name="System Bold" size="18.0" />
+        </font>
+    </Label>
+
+    <!-- 交易描述 -->
+    <GridPane hgap="15.0" vgap="10.0">
+        <columnConstraints>
+            <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="300.0" prefWidth="300.0" />
+        </columnConstraints>
+
+        <Label text="交易描述:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <Label fx:id="transactionDescriptionLabel" text="交易描述内容" wrapText="true"
+               GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+        <Label text="当前类别:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+        <Label fx:id="currentCategoryLabel" text="未分类"
+               GridPane.rowIndex="1" GridPane.columnIndex="1" />
+    </GridPane>
+
+    <!-- AI分类信息 -->
+    <VBox fx:id="confidenceContainer" spacing="5.0" styleClass="ai-info-container">
+        <Label text="AI分类信息" styleClass="section-header">
+            <font>
+                <Font name="System Bold" size="14.0" />
+            </font>
+        </Label>
+
+        <GridPane hgap="15.0" vgap="5.0">
+            <columnConstraints>
+                <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
+                <ColumnConstraints hgrow="ALWAYS" minWidth="300.0" prefWidth="300.0" />
+            </columnConstraints>
+
+            <Label text="置信度:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+            <Label fx:id="confidenceLabel" text="80%" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+            <Label text="匹配原因:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+            <Label fx:id="reasonLabel" text="关键词匹配" wrapText="true"
+                   GridPane.rowIndex="1" GridPane.columnIndex="1" />
+        </GridPane>
+    </VBox>
+
+    <!-- 类别选择 -->
+    <Label text="选择正确的类别:" styleClass="section-header">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Label>
+
+    <ComboBox fx:id="categoryComboBox" maxWidth="Infinity" />
+
+    <CheckBox fx:id="confirmCheckBox" text="确认此类别（未来相似交易将自动应用）" />
+
+    <Region VBox.vgrow="ALWAYS" />
+
+    <!-- 按钮区域 -->
+    <HBox spacing="10.0" alignment="CENTER_RIGHT">
+        <Button fx:id="cancelButton" text="取消" onAction="#handleCancel" styleClass="button,secondary" />
+        <Button fx:id="saveButton" text="保存" onAction="#handleSave" styleClass="button,success" defaultButton="true" />
+    </HBox>
+
+</VBox>

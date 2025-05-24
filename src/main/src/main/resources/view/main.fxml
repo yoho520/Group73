@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="mainLayout" prefHeight="800.0" prefWidth="1200.0" styleClass="main-container"
+            xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.software.financeapp.controller.MainController">
+
+    <left>
+        <!-- 侧边导航栏 -->
+        <VBox styleClass="sidebar">
+            <children>
+                <!-- 应用Logo -->
+                <HBox alignment="CENTER" styleClass="logo-container">
+                    <Label text="Financial Assistant" styleClass="app-title">
+                        <font>
+                            <Font name="System Bold" size="18.0" />
+                        </font>
+                    </Label>
+                </HBox>
+
+                <!-- 用户信息 -->
+                <HBox alignment="CENTER_LEFT" styleClass="user-container">
+                    <Label fx:id="userNameLabel" text="用户名" styleClass="user-name" />
+                </HBox>
+
+                <!-- 导航菜单 -->
+                <VBox spacing="10.0" styleClass="nav-menu">
+                    <ToggleButton fx:id="dashboardToggle" text="Intelligent SavingsPlan" styleClass="nav-button" maxWidth="Infinity" />
+                    <ToggleButton fx:id="transactionsToggle" text="Transaction management" styleClass="nav-button" maxWidth="Infinity" />
+                    <ToggleButton fx:id="budgetToggle" text="Budget management" styleClass="nav-button" maxWidth="Infinity" />
+                    <ToggleButton fx:id="reportsToggle" text="Report statistics" styleClass="nav-button" maxWidth="Infinity" />
+                    <ToggleButton fx:id="familyFinanceToggle" text="Family finances" styleClass="nav-button" maxWidth="Infinity" />
+                    <ToggleButton fx:id="investmentToggle" text="Financial localization" styleClass="nav-button" maxWidth="Infinity" />
+                    <ToggleButton fx:id="securityToggle" text="Security Center" styleClass="nav-button" maxWidth="Infinity" />
+                    <ToggleButton fx:id="aiAssistantToggle" text="AI assistant" styleClass="nav-button" maxWidth="Infinity" />
+                    <ToggleButton fx:id="settingsToggle" text="Setting" styleClass="nav-button" maxWidth="Infinity" />
+                </VBox>
+
+                <Region VBox.vgrow="ALWAYS" />
+
+                <!-- 底部选项 -->
+                <VBox spacing="10.0" styleClass="bottom-options">
+                    <HBox alignment="CENTER_LEFT" styleClass="theme-toggle">
+                        <Label text="Dark mode" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <ToggleButton fx:id="darkModeToggle" onAction="#handleDarkModeToggle" styleClass="switch-toggle" />
+                    </HBox>
+
+                    <Button text="Log out" onAction="#handleLogout" styleClass="logout-button" />
+                    <Button text="Exit the application" onAction="#handleExit" styleClass="exit-button" />
+                </VBox>
+            </children>
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+        </VBox>
+    </left>
+
+    <center>
+        <!-- 主内容区域 -->
+        <StackPane fx:id="contentArea" styleClass="content-area">
+            <!-- 内容在这里动态加载 -->
+        </StackPane>
+    </center>
+
+</BorderPane>

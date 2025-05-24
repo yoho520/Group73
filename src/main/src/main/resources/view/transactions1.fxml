@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="20.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.software.financeapp.controller.TransactionController">
+
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+    </padding>
+
+    <!-- 页面标题 -->
+    <HBox alignment="CENTER_LEFT">
+        <Label text="交易管理" styleClass="page-title">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+        <Region HBox.hgrow="ALWAYS" />
+        <Label text="AI辅助" styleClass="ai-badge">
+            <font>
+                <Font name="System" size="14.0" />
+            </font>
+        </Label>
+    </HBox>
+
+    <!-- 过滤和工具栏 -->
+    <HBox spacing="20.0" alignment="CENTER_LEFT">
+        <!-- 搜索框 -->
+        <TextField fx:id="searchField" promptText="搜索..." styleClass="search-box" prefWidth="250.0" />
+
+        <!-- 日期选择器 -->
+        <Label text="从:" />
+        <DatePicker fx:id="startDatePicker" />
+
+        <Label text="至:" />
+        <DatePicker fx:id="endDatePicker" />
+
+        <!-- 类型过滤器 -->
+        <Label text="类型:" />
+        <ComboBox fx:id="typeFilterComboBox" prefWidth="120.0" />
+
+        <!-- 类别过滤器 -->
+        <Label text="类别:" />
+        <ComboBox fx:id="categoryFilterComboBox" prefWidth="150.0" />
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- 工具按钮 -->
+        <Button fx:id="classifyButton" text="智能分类" onAction="#handleBatchClassify" styleClass="button,primary" />
+        <Button fx:id="addButton" text="新增" onAction="#handleAddTransaction" styleClass="button,success" />
+        <Button fx:id="editButton" text="编辑" onAction="#handleEditTransaction" styleClass="button" />
+        <Button fx:id="deleteButton" text="删除" onAction="#handleDeleteTransaction" styleClass="button,danger" />
+        <Button fx:id="importButton" text="导入" onAction="#handleImportTransactions" styleClass="button,secondary" />
+        <Button fx:id="exportButton" text="导出" onAction="#handleExportTransactions" styleClass="button,secondary" />
+    </HBox>
+
+    <!-- 统计信息卡片 -->
+    <HBox spacing="15.0" styleClass="stats-container">
+        <VBox styleClass="stats-card">
+            <Label text="总收入" styleClass="stats-title" />
+            <Label fx:id="totalIncomeLabel" text="¥0.00" styleClass="stats-value,income-value" />
+        </VBox>
+
+        <VBox styleClass="stats-card">
+            <Label text="总支出" styleClass="stats-title" />
+            <Label fx:id="totalExpenseLabel" text="¥0.00" styleClass="stats-value,expense-value" />
+        </VBox>
+
+        <VBox styleClass="stats-card">
+            <Label text="收支差额" styleClass="stats-title" />
+            <Label fx:id="balanceLabel" text="¥0.00" styleClass="stats-value" />
+        </VBox>
+    </HBox>
+
+    <!-- 交易表格 -->
+    <TableView fx:id="transactionTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="dateColumn" text="日期" prefWidth="140.0" />
+            <TableColumn fx:id="typeColumn" text="类型" prefWidth="80.0" />
+            <TableColumn fx:id="amountColumn" text="金额" prefWidth="100.0" />
+            <TableColumn fx:id="categoryColumn" text="类别" prefWidth="120.0" />
+            <TableColumn fx:id="categoryConfirmedColumn" text="AI" prefWidth="40.0" />
+            <TableColumn fx:id="merchantColumn" text="商家" prefWidth="120.0" />
+            <TableColumn fx:id="descriptionColumn" text="描述" prefWidth="200.0" />
+        </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+        </columnResizePolicy>
+        <contextMenu>
+            <ContextMenu>
+                <items>
+                    <MenuItem text="编辑交易" onAction="#handleEditTransaction" />
+                    <MenuItem text="修改分类" onAction="#handleEditCategory" />
+                    <MenuItem text="删除交易" onAction="#handleDeleteTransaction" />
+                </items>
+            </ContextMenu>
+        </contextMenu>
+    </TableView>
+
+    <!-- 分页控件 -->
+    <Pagination fx:id="pagination" maxPageIndicatorCount="5" pageCount="1" />
+
+    <!-- 提示信息 -->
+    <HBox spacing="10.0" alignment="CENTER_RIGHT" styleClass="tip-container">
+        <Label text="提示: 右键点击交易可修改分类，双击可编辑交易详情" styleClass="tip-text" />
+    </HBox>
+
+</VBox>
